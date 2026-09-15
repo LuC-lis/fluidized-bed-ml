@@ -1,0 +1,22 @@
+{
+  "u_top_tap_break": 0.6499999999999999,
+  "u_top_tap_break_range": [
+    0.6,
+    0.7
+  ],
+  "u_axial_contrast": 0.6499999999999999,
+  "u_axial_contrast_range": [
+    0.6,
+    0.7
+  ],
+  "u_low_tap_decline": 0.55,
+  "u_low_tap_decline_channel": "T1",
+  "fluctuation_peak_interior": false,
+  "recommended_band": [
+    0.55,
+    0.6499999999999999
+  ],
+  "top_channel": "T6",
+  "low_channel": "T3",
+  "note": "Instrument-only estimators; no model is involved. The classic 'peak of the pressure-fluctuation intensity' criterion cannot be applied here because the summed standard deviation is still rising at the highest velocity tested (no interior maximum in 0.1-0.9 m/s), which is reported as a result in its own right. The three estimators bracket the bubbling-to-turbulent transition; the value should not be quoted to better than +/-0.1 m/s. The project poster states 0.6-0.8 m/s; this independent re-analysis returns a slightly lower but clearly overlapping band."
+}

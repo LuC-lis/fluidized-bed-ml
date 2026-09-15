@@ -1,0 +1,9 @@
+{
+  "eps_min": 0.28818591336739885,
+  "eps_max": 0.5066785041293893,
+  "eps_span": 0.21849259076199046,
+  "range_plausible": false,
+  "core_annulus_gradient_correct": true,
+  "n_conditions": 86,
+  "calibration_usable": false
+}

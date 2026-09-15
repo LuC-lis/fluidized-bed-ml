@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------------
+# Raw experimental data is NEVER committed (GB-scale, see docs/data_quality.md)
+# ---------------------------------------------------------------------------
+data/
+raw/
+*.mat
+*.bin
+*.pvd
+*.ini
+*-st.txt
+*-st.xls
+
+# Large / binary artefacts that must not enter the repository
+*.dmg
+*.pptx
+*.pdf
+*.docx
+
+# Derived outputs: figures are committed on purpose, caches are not
+results/cache/
+results/**/*.npz
+results/**/*.parquet
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Editors / OS
+.idea/
+.vscode/
+.DS_Store

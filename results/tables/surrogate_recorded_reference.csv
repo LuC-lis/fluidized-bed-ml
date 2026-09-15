@@ -1,0 +1,13 @@
+source_notebook,what,metric,value,note
+legacy/notebooks/XC_AC preformances.ipynb,"Wide-ANN surrogate, 5-fold CV",mean validation R2,0.9455,"targets eps_s and C/C0; LeakyReLU, sigmoid output; scaler fitted on the full dataset (leakage)"
+legacy/notebooks/XC_AC preformances.ipynb,"Wide-ANN surrogate, 5-fold CV",mean validation MSE,0.00094,same run
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (LeakyReLU),0.9455,best activation
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (ELU),0.9335,
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (GELU),0.9303,
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (no output sigmoid),0.9074,
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (ReLU),0.8136,
+legacy/notebooks/XC_AC preformances.ipynb,activation study,mean CV R2 (Tanh),0.6705,
+legacy/notebooks/XC_regime_最好的.ipynb,vibration features -> Ug (XGBoost),hold-out R2,0.8912,"single 80/20 split, 40 samples"
+legacy/notebooks/XC_regime_最好的.ipynb,vibration features -> Temp (XGBoost),hold-out R2,0.3142,same split; temperature is essentially not learnable from this feature set
+legacy/notebooks/XC_regime_with_split_fixed1.ipynb,"vibration features -> (Ug, Temp) MLP",mean 5-fold CV R2,0.5958,4-fold mean of the saved per-fold values
+legacy/notebooks/XC_regime_with_split.ipynb,"vibration features -> (Ug, Temp) MLP, sigmoid output + unstandardised targets",mean 5-fold CV R2,-27.26,the bug that motivated the 'fixed' notebooks

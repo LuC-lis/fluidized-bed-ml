@@ -1,0 +1,5 @@
+dataset,folder,n_files,size_mb,extensions,exists
+pressure,Pressure_Energy,18,26.9,.xlsx,True
+vibration,20250609 LMF,120,628.6,".mat,.bin",True
+ofp,20250609 LC,1534,3183.4,".pvd,.ini,.txt,.xls",True
+tabular,training & validation,2,0.0,.xlsx,True

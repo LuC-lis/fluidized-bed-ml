@@ -1,0 +1,6 @@
+{
+  "mean_repeat_spread_mv": 85.43314785363651,
+  "spatial_range_mv": 948.6071563720698,
+  "noise_to_signal": 0.09006167334892769,
+  "interpretation": "ratio << 1: the spatial structure dominates the run-to-run drift; ratio ~ 1: single-point comparisons are not meaningful and only trends averaged over many conditions should be reported."
+}
