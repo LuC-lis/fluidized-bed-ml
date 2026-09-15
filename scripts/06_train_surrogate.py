@@ -71,6 +71,10 @@ def main() -> int:
     parser.add_argument("--folds", type=int, default=5)
     parser.add_argument("--epochs", type=int, default=300)
     parser.add_argument("--verbose", action="store_true")
+    parser.add_argument("--standardize-targets", action="store_true",
+                        help="standardise the targets inside each fold; forces a linear "
+                             "output layer (a sigmoid output with standardised targets is "
+                             "the bug documented in docs/data_quality.md section 11)")
     args = parser.parse_args()
 
     viz.set_style()
@@ -81,6 +85,9 @@ def main() -> int:
             print(f"!! dataset {args.data} not found -- falling back to --demo")
         print("running on the synthetic demo dataset (the real campaign data belongs to "
               "the supervising group and is not redistributed here)")
+        print("  NOTE: demo numbers are a smoke test of the harness, NOT a result -- the")
+        print("  synthetic target is a different function from the real one, so the ranking")
+        print("  of activations here does not transfer to the published surrogate.")
         X, y, feature_names, target_names = synthetic_dataset()
         tag = f"{args.tag}_demo"
     else:
@@ -91,18 +98,25 @@ def main() -> int:
     print(f"  features: {feature_names}")
     print(f"  targets : {target_names}")
 
+    # Both surrogate targets are fractions in (0, 1), so the original set-up used a
+    # sigmoid output on *un-standardised* targets.  The two choices are coupled:
+    # a sigmoid output is only valid while the targets stay in (0, 1).
+    output_activation = "none" if args.standardize_targets else "sigmoid"
     model_factory = lambda: model_wide_ann.WideANN(  # noqa: E731
         model_wide_ann.WideANNConfig(
             input_dim=X.shape[1], output_dim=y.shape[1],
-            activation="leaky_relu", output_activation="sigmoid",
+            activation="leaky_relu", output_activation=output_activation,
         )
     )
     print(f"  model   : {model_factory().describe()}")
+    print(f"  targets : standardised={args.standardize_targets} "
+          f"-> output activation '{output_activation}'")
 
     config = train_cv.TrainConfig(seed=args.seed, n_splits=args.folds,
                                   num_epochs=args.epochs, verbose=args.verbose,
                                   learning_rate=0.005, weight_decay=0.4,
-                                  batch_size=min(72, len(X)))
+                                  batch_size=min(72, len(X)),
+                                  standardize_targets=args.standardize_targets)
     result = train_cv.cross_validate(model_factory, X, y, config, target_names=target_names)
 
     viz.write_table(result["folds"], f"surrogate_folds_{tag}")
@@ -133,13 +147,14 @@ def main() -> int:
 
 
 def activation_study(X, y, target_names, activations, base_config) -> pd.DataFrame:
-    """Mean cross-validated R2 for each output activation."""
+    """Mean cross-validated R2 for each hidden-layer activation."""
+    output_activation = "none" if base_config.standardize_targets else "sigmoid"
     rows = []
     for activation in activations:
         factory = lambda activation=activation: model_wide_ann.WideANN(  # noqa: E731
             model_wide_ann.WideANNConfig(
                 input_dim=X.shape[1], output_dim=y.shape[1],
-                activation=activation, output_activation="sigmoid",
+                activation=activation, output_activation=output_activation,
             )
         )
         res = train_cv.cross_validate(factory, X, y, base_config, target_names=target_names)

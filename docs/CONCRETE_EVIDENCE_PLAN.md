@@ -63,9 +63,9 @@ out of it:
 
 | Task | Best accuracy | Majority baseline | Macro-F1 |
 |---|---|---|---|
-| 9-class gas velocity | 0.29 | 0.13 | 0.30 (0.58–0.64 within one velocity step) |
+| 9-class gas velocity | 0.29 | 0.13 | 0.30 (0.59–0.65 within one velocity step) |
 | 3-class regime | 0.70 | 0.52 | 0.50 — the *transition* class is not separable |
-| **2-class bubbling vs turbulent** | **0.82** | 0.59 | **0.81** — still 0.80 on an unseen radial position |
+| **2-class bubbling vs turbulent** | **≈0.82** | 0.59 | **≈0.81** — still 0.80 on an unseen radial position |
 
 Why it was worth doing:
 

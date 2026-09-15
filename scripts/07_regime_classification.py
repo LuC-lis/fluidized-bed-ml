@@ -60,7 +60,7 @@ def make_models() -> dict:
     return {
         "logistic_regression": Pipeline([
             ("scaler", StandardScaler()),
-            ("clf", LogisticRegression(max_iter=2000, multi_class="auto")),
+            ("clf", LogisticRegression(max_iter=2000)),
         ]),
         "random_forest": RandomForestClassifier(
             n_estimators=400, random_state=0, n_jobs=-1, min_samples_leaf=2

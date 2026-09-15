@@ -151,7 +151,7 @@ protocols, and a majority-class baseline reported next to every score.
 |---|---|---|---|
 | 9-class gas velocity | 0.29 | 0.13 | 0.30 | (0.58-0.64 within one velocity step) |
 | 3-class regime (bubbling / transition / turbulent) | 0.70 | 0.52 | 0.50 |
-| **2-class bubbling vs turbulent** | **0.82** | 0.59 | **0.81** |
+| **2-class bubbling vs turbulent** | **≈0.82** | 0.59 | **≈0.81** |
 
 The binary result **survives the harsher protocol** — training on five radial
 positions and testing on a sixth that the model has never seen (accuracy 0.80,
@@ -161,7 +161,7 @@ The two negative results are reported with equal prominence: the *transition*
 regime is not separable as a discrete class (the classifier almost never predicts
 it, macro-F1 0.50), which is what one expects for a continuum; and the exact gas
 velocity is not recoverable from a local probe signal, although the errors are
-strongly ordinal (58-64 % of predictions land within one velocity step).
+strongly ordinal (59-65 % of predictions land within one velocity step).
 
 ---
 
