@@ -1,0 +1,5 @@
+{
+  "pooled_slope_hz_per_ms": -0.8903130343174872,
+  "two_segment_r2": -6.201666398750914,
+  "note": "Averaging the two heights cancels two opposing trends. The two-segment fit is worse than the mean (R2 < 0), so no single-frequency-vs-velocity curve exists for this bed: height must not be averaged away."
+}

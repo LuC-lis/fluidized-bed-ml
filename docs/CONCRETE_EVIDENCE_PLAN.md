@@ -50,6 +50,19 @@ stands alone.
 ## Tier 3 — new analysis that only this data can support (the strongest move)
 
 ### 3.1 Regime / gas-velocity classification from the probe signal ⭐ *(done — `scripts/07`)*
+### 3.0 Bonus results that were not in the original plan *(done — `scripts/11`, `scripts/13`)*
+Two of the strongest findings in the repository came out of simply asking what else
+these recordings contain:
+
+* **bubble coalescence measured directly** (`scripts/11`): the bubble-passage
+  frequency falls with gas velocity at 60 cm (−2.02 Hz per m/s, p < 0.0001) and
+  rises at 100 cm (+0.87, p = 0.005) — opposite trends that a pooled analysis
+  destroys (R² = −6.2). The two curves cross at 0.33 m/s, a *bed-expansion* event
+  distinct from the regime transition;
+* **triangulation** (`scripts/13`): one breakpoint estimator applied to pressure,
+  vibration and probe observables gives 0.67 / 0.63 / 0.53 / 0.64 m/s, all
+  intervals overlapping — the transition is corroborated by three independent
+  measurement principles.
 `scripts/07_regime_classification.py` trains three classifiers on **36 features
 extracted from 10.5 s of optical-probe signal** per record, over 434 records, for
 three labelling schemes (9-class velocity, 3-class regime, binary
@@ -76,24 +89,35 @@ Why it was worth doing:
 * it is a *new* result that nobody has published, obtained from data that was
   already sitting in the folder.
 
-### 3.2 A working `U_mf` estimate, with an error bar *(open — the remaining place where
-the poster's "±0.05 m/s" could become a real number)*
+### 3.2 A working `U_mf` estimate, with an error bar *(done — `scripts/10`)*
+**Outcome: the claim is refuted, provably.** The total bed pressure drop moves by
+only +2.2 % over 0.1–0.9 m/s (a packed bed would move by +800 %), so the bed is
+fluidised at every measured velocity and the fixed-bed branch is absent. The
+profile-likelihood interval for `U_mf` covers the whole 0.01–0.60 m/s grid. Bonus:
+the same arithmetic implies a bulk density of 662 kg/m³ if the unit is kPa,
+largely resolving the unknown pressure unit.
 The pressure campaign is at a single temperature, so the classic
 `ΔP`-versus-`U_g` intersection method can be applied: fit the fixed-bed line and
 the fluidized line, intersect, repeat per tap, and report the spread across taps.
 That turns the poster's "±0.05 m/s" into a measured quantity (or shows it is not
 achievable — which is also a result). **Cost: half a day.**
 
-### 3.3 A leave-one-condition-out soft-sensor benchmark
+### 3.3 A leave-one-condition-out soft-sensor benchmark *(done — `scripts/12`)*
+**Outcome:** regression of the continuous gas velocity from probe features gives
+R² = 0.63 (within conditions) and 0.57 (unseen radial position), MAE 0.12–0.13 m/s,
+against an R² = 0 baseline. Classification, seed-averaged over 10 splits, is
+0.829 ± 0.015 (2-class, within conditions) and 0.790 ± 0.015 (unseen position).
 Use the probe features to predict the *continuous* gas velocity
 (`GroupKFold` by cell, regression). Report `R²` and `RMSE` per protocol. This is
 the honest version of "the ANN predicts the hydrodynamic state", with error bars
 and a baseline. **Cost: half a day; reuses `scripts/07`.**
 
-### 3.4 Uncertainty-aware reporting
-Repeat every classification/regression result over ≥10 seeds and report mean ± std
-plus a bootstrap confidence interval. Cheap, and it makes the numbers
-interview-proof. **Cost: a few hours** (the harness already takes `seed`).
+### 3.4 Uncertainty-aware reporting *(done — `scripts/12`, `scripts/13`)*
+Every classification and regression number is now a mean ± std over **10
+independent splits**, and every breakpoint carries a bootstrap interval. Worth
+noting what this changed: the original single-split accuracy (0.821) turned out to
+be the optimistic end of a 0.790 ± 0.015 distribution — reporting one split would
+have overstated the result.
 
 ---
 

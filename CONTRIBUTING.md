@@ -36,11 +36,14 @@ future version of its author).
 
 | Item | Where it is tracked |
 |---|---|
-| `U_mf` estimate with an error bar | `docs/CONCRETE_EVIDENCE_PLAN.md` §3.2 |
-| correct probe calibration constants | `docs/data_quality.md` §4 |
+| correct probe calibration constants | `docs/data_quality.md` §4 — **still the top open item** |
 | provenance of the `Temp = 600–900 °C` axis | `docs/data_quality.md` §10 |
-| permission to release the raw data | `docs/CONCRETE_EVIDENCE_PLAN.md` §2.4 |
-| seed-averaged error bars for the classification results | `docs/CONCRETE_EVIDENCE_PLAN.md` §3.4 |
+| written (email) confirmation of the data-release approval | `docs/DATA_RELEASE.md` §3 |
+| confirmation that the pressure unit is kPa | `docs/data_quality.md` §9 — evidence points that way |
+| a third bed height for the probe, to resolve the expansion event in height | `docs/CONCRETE_EVIDENCE_PLAN.md` §3.0 |
+
+Closed since the first version: `U_mf` error bar (§3.2), soft-sensor benchmark
+(§3.3), seed-averaged error bars (§3.4), and two bonus analyses (§3.0).
 
 ## Environment
 

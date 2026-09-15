@@ -1,0 +1,183 @@
+{
+  "classification": [
+    {
+      "task": "regime_2class",
+      "protocol": "radial",
+      "model": "random_forest",
+      "accuracy_mean": 0.7902631578947368,
+      "accuracy_std": 0.014522776922947928,
+      "accuracy_p05": 0.7734210526315789,
+      "accuracy_p95": 0.8096052631578947,
+      "macro_f1_mean": 0.7819056152047342,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_2class",
+      "protocol": "radial",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.7889473684210526,
+      "accuracy_std": 0.022149774178367193,
+      "accuracy_p05": 0.7590789473684211,
+      "accuracy_p95": 0.8146052631578947,
+      "macro_f1_mean": 0.78269919587565,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_2class",
+      "protocol": "replicate",
+      "model": "random_forest",
+      "accuracy_mean": 0.8289473684210525,
+      "accuracy_std": 0.015091798714109846,
+      "accuracy_p05": 0.8056578947368421,
+      "accuracy_p95": 0.8447368421052631,
+      "macro_f1_mean": 0.8208623959704081,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_2class",
+      "protocol": "replicate",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.8152631578947368,
+      "accuracy_std": 0.01672657745481126,
+      "accuracy_p05": 0.7903947368421053,
+      "accuracy_p95": 0.8352631578947368,
+      "macro_f1_mean": 0.8077487159674097,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_3class",
+      "protocol": "radial",
+      "model": "random_forest",
+      "accuracy_mean": 0.6894009216589863,
+      "accuracy_std": 0.013557753710363269,
+      "accuracy_p05": 0.6715437788018433,
+      "accuracy_p95": 0.7055299539170506,
+      "macro_f1_mean": 0.50985427166009,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_3class",
+      "protocol": "radial",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.6785714285714286,
+      "accuracy_std": 0.011910954239071264,
+      "accuracy_p05": 0.665668202764977,
+      "accuracy_p95": 0.6965437788018433,
+      "macro_f1_mean": 0.5142154734253654,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_3class",
+      "protocol": "replicate",
+      "model": "random_forest",
+      "accuracy_mean": 0.7087557603686636,
+      "accuracy_std": 0.01361853164934039,
+      "accuracy_p05": 0.6892857142857143,
+      "accuracy_p95": 0.7277649769585253,
+      "macro_f1_mean": 0.5069983285960677,
+      "n_seeds": 10
+    },
+    {
+      "task": "regime_3class",
+      "protocol": "replicate",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.6771889400921659,
+      "accuracy_std": 0.016200194123839835,
+      "accuracy_p05": 0.6511520737327189,
+      "accuracy_p95": 0.6973502304147465,
+      "macro_f1_mean": 0.50342914355103,
+      "n_seeds": 10
+    },
+    {
+      "task": "velocity_9class",
+      "protocol": "radial",
+      "model": "random_forest",
+      "accuracy_mean": 0.28502304147465435,
+      "accuracy_std": 0.014735739129326715,
+      "accuracy_p05": 0.2642857142857143,
+      "accuracy_p95": 0.30311059907834104,
+      "macro_f1_mean": 0.29536548876055024,
+      "n_seeds": 10
+    },
+    {
+      "task": "velocity_9class",
+      "protocol": "radial",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.25599078341013826,
+      "accuracy_std": 0.015029055870460786,
+      "accuracy_p05": 0.23456221198156682,
+      "accuracy_p95": 0.2761520737327189,
+      "macro_f1_mean": 0.2684165289484795,
+      "n_seeds": 10
+    },
+    {
+      "task": "velocity_9class",
+      "protocol": "replicate",
+      "model": "gradient_boosting",
+      "accuracy_mean": 0.1622119815668203,
+      "accuracy_std": 0.014086951174329189,
+      "accuracy_p05": 0.1423963133640553,
+      "accuracy_p95": 0.18064516129032257,
+      "macro_f1_mean": 0.16971492733163682,
+      "n_seeds": 10
+    },
+    {
+      "task": "velocity_9class",
+      "protocol": "replicate",
+      "model": "random_forest",
+      "accuracy_mean": 0.16152073732718894,
+      "accuracy_std": 0.02705561485916582,
+      "accuracy_p05": 0.13006912442396312,
+      "accuracy_p95": 0.20587557603686632,
+      "macro_f1_mean": 0.1690017286340962,
+      "n_seeds": 10
+    }
+  ],
+  "regression": [
+    {
+      "protocol": "replicate",
+      "model": "random_forest",
+      "r2_mean": 0.6271948198638362,
+      "r2_std": 0.002196351388644859,
+      "rmse_mean": 0.14728589632964265,
+      "rmse_std": 0.00043370889495029816,
+      "mae_mean": 0.11885449308755755,
+      "mae_std": 0.00037252444635547125,
+      "r2_baseline": 0.0
+    },
+    {
+      "protocol": "replicate",
+      "model": "gradient_boosting",
+      "r2_mean": 0.5862468135067007,
+      "r2_std": 0.0,
+      "rmse_mean": 0.1551645703788013,
+      "rmse_std": 0.0,
+      "mae_mean": 0.12463049422890707,
+      "mae_std": 0.0,
+      "r2_baseline": 0.0
+    },
+    {
+      "protocol": "radial",
+      "model": "random_forest",
+      "r2_mean": 0.5680688168046188,
+      "r2_std": 0.0032818632221162506,
+      "rmse_mean": 0.15853543395018357,
+      "rmse_std": 0.0006023573049818301,
+      "mae_mean": 0.12728248847926263,
+      "mae_std": 0.00044069386222226535,
+      "r2_baseline": 0.0
+    },
+    {
+      "protocol": "radial",
+      "model": "gradient_boosting",
+      "r2_mean": 0.52545364254337,
+      "r2_std": 0.0,
+      "rmse_mean": 0.16617328664861652,
+      "rmse_std": 0.0,
+      "mae_mean": 0.13252318985243577,
+      "mae_std": 0.0,
+      "r2_baseline": 0.0
+    }
+  ],
+  "note": "Every number is the mean over ten independent splits; the spread is the part of the score that a single train/test split would have hidden."
+}

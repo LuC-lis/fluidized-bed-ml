@@ -1,0 +1,14 @@
+{
+  "mean": 6.49707965,
+  "std": 0.07620163719292256,
+  "relative_spread": 0.01172859827767735,
+  "slope_per_ms": 0.17995125277777702,
+  "slope_ci_low": 0.04752438598032067,
+  "slope_ci_high": 0.31586899904513766,
+  "slope_consistent_with_zero": false,
+  "max_relative_deviation": 0.02346127668810937,
+  "relative_change_across_range": 0.022157801655120792,
+  "relative_change_ci_low": 0.005851784314242867,
+  "relative_change_ci_high": 0.03889365882040712,
+  "packed_bed_expectation_ratio": 9.0
+}

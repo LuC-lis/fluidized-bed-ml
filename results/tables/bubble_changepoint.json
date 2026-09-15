@@ -1,0 +1,10 @@
+{
+  "changepoint_velocity": 0.4608040201005025,
+  "ci_low": 0.41859296482412056,
+  "ci_high": 0.5372361809045225,
+  "share_at_search_bounds": 0.0,
+  "slope_below": -10.490469687964318,
+  "slope_above": 7.024151028639035,
+  "r_squared": -6.201666398750914,
+  "interpretation": "Two-segment fit of the radially averaged bubble-passage rate against gas velocity. The breakpoint is the velocity at which the passage frequency stops growing linearly, i.e. where discrete bubble identity is lost. A large 'share_at_search_bounds' means the breakpoint is not well located by these nine velocities and the interval should be read as indicative only."
+}

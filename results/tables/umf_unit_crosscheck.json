@@ -1,0 +1,11 @@
+{
+  "total_reading": 6.49707965,
+  "assumed_unit": "kPa",
+  "pressure_drop_pa": 6497.07965,
+  "implied_bulk_density": 662.2915035677879,
+  "reference_range": [
+    550.0,
+    850.0
+  ],
+  "within_expected_range": true
+}

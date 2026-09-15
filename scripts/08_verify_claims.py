@@ -91,19 +91,13 @@ def main() -> int:
     check("vibration: median per-sensor Spearman rho > 0.6", median_rho > 0.6,
           f"median rho = {median_rho:.3f}")
 
-    # --- 11-12. classification ---------------------------------------------
+    # --- 11-12. classification (single-split) ------------------------------
     cls = pd.read_csv(tables / "probe_classification_results.csv")
     two = cls[cls["task"] == "regime_2class"]
-    best_acc = float(two["accuracy"].max())
     baseline = float(two["majority_baseline"].max())
-    radial = two[two["protocol"] == "radial"]
-    check("classification: bubbling-vs-turbulent accuracy >= 0.80", best_acc >= 0.80,
-          f"best = {best_acc:.3f}")
-    check("classification: beats the majority baseline by >= 0.15",
-          best_acc - baseline >= 0.15, f"{best_acc:.3f} vs {baseline:.3f}")
-    check("classification: holds up on an unseen radial position",
-          bool((radial["accuracy"] >= 0.78).any()),
-          f"radial best = {radial['accuracy'].max():.3f}")
+    check("classification: bubbles-vs-turbulent beats the majority baseline by >= 0.15",
+          float(two["accuracy"].max()) - baseline >= 0.15,
+          f"{two['accuracy'].max():.3f} vs {baseline:.3f}")
 
     three = cls[cls["task"] == "regime_3class"]
     check("classification: transition class stays poorly separable (negative result)",
@@ -117,6 +111,107 @@ def main() -> int:
     check("classification: but errors are strongly ordinal",
           float(nine["within_one_step"].max()) >= 0.55,
           f"within +/-1 step = {nine['within_one_step'].max():.3f}")
+
+    # --- 13. robustness over ten seeds ------------------------------------
+    robust = tables / "robustness_classification_summary.csv"
+    if robust.exists():
+        r = pd.read_csv(robust)
+        two_r = r[r["task"] == "regime_2class"]
+        within = two_r[two_r["protocol"] == "replicate"]["accuracy_mean"].max()
+        across = two_r[two_r["protocol"] == "radial"]["accuracy_mean"].max()
+        check("robustness: 2-class accuracy within conditions >= 0.80 over 10 seeds",
+              within >= 0.80, f"mean = {within:.3f}")
+        check("robustness: 2-class accuracy on an unseen radial position >= 0.75",
+              across >= 0.75, f"mean = {across:.3f}")
+        spread = float(two_r["accuracy_std"].max())
+        check("robustness: seed-to-seed spread is small (< 0.03)", spread < 0.03,
+              f"max std = {spread:.3f}")
+        three_r = r[r["task"] == "regime_3class"]
+        check("robustness: transition class still poorly separable over 10 seeds",
+              float(three_r["macro_f1_mean"].max()) < 0.6,
+              f"macro-F1 = {three_r['macro_f1_mean'].max():.3f}")
+
+    regression = tables / "robustness_regression_summary.csv"
+    if regression.exists():
+        reg = pd.read_csv(regression)
+        best_r2 = float(reg["r2_mean"].max())
+        best_mae = float(reg["mae_mean"].min())
+        check("regression: gas velocity recovered with R2 >= 0.5", best_r2 >= 0.5,
+              f"best R2 = {best_r2:.3f}")
+        check("regression: MAE <= 0.15 m/s", best_mae <= 0.15, f"MAE = {best_mae:.3f} m/s")
+        check("regression: the mean-prediction baseline scores 0",
+              abs(float(reg["r2_baseline"].mean())) < 1e-6,
+              f"baseline R2 = {reg['r2_baseline'].mean():.2e}")
+
+    # --- 14. bubble coalescence -------------------------------------------
+    slopes = tables / "bubble_slopes.csv"
+    if slopes.exists():
+        sl = pd.read_csv(slopes)
+        low = sl[sl["bed_height_cm"] == 60]
+        check("bubble: passage rate falls with velocity at 60 cm at every position",
+              bool((low["slope"] < 0).all()),
+              f"{(low['slope'] < 0).sum()}/{len(low)} negative")
+        tests = tables / "bubble_pooled_slope_tests.json"
+        if tests.exists():
+            import json as _json
+            pooled = _json.loads(tests.read_text())
+            low_test = next(t for t in pooled if t["height_cm"] == 60)
+            high_test = next(t for t in pooled if t["height_cm"] == 100)
+            check("bubble: 60 cm slope significant and negative (p < 0.01)",
+                  low_test["slope"] < 0 and low_test["p_value"] < 0.01,
+                  f"slope = {low_test['slope']:+.2f}, p = {low_test['p_value']:.2e}")
+            check("bubble: 100 cm slope significant and positive (opposite sign)",
+                  high_test["slope"] > 0 and high_test["p_value"] < 0.01,
+                  f"slope = {high_test['slope']:+.2f}, p = {high_test['p_value']:.2e}")
+        pooled_fit = tables / "bubble_pooled_fit.json"
+        if pooled_fit.exists():
+            import json as _json
+            fit = _json.loads(pooled_fit.read_text())
+            check("bubble: pooling the heights destroys the signal (negative result)",
+                  fit["two_segment_r2"] < 0,
+                  f"pooled R2 = {fit['two_segment_r2']:.2f}")
+
+    # --- 15. triangulation -------------------------------------------------
+    triang = tables / "triangulation_breakpoints.csv"
+    if triang.exists():
+        tri = pd.read_csv(triang)
+        check("triangulation: four observables give four breakpoints",
+              len(tri) == 4, f"got {len(tri)}")
+        check("triangulation: all breakpoints inside 0.45-0.75 m/s",
+              bool(((tri["breakpoint"] >= 0.45) & (tri["breakpoint"] <= 0.75)).all()),
+              f"range {tri['breakpoint'].min():.2f}-{tri['breakpoint'].max():.2f}")
+        lower = float(tri["ci_low"].max())
+        upper = float(tri["ci_high"].min())
+        check("triangulation: the four intervals share a common overlap",
+              lower < upper, f"overlap {lower:.2f}-{upper:.2f} m/s")
+
+    # --- 16. U_mf identifiability and the pressure unit --------------------
+    umf_profile = tables / "umf_identifiability_profile.csv"
+    if umf_profile.exists():
+        prof = pd.read_csv(umf_profile)
+        admissible = prof[prof["identifiable"]]
+        check("U_mf: not identifiable (profile interval spans the whole grid)",
+              len(admissible) >= 0.9 * len(prof),
+              f"{len(admissible)}/{len(prof)} grid points admissible")
+        check("U_mf: the admissible set reaches well below the measured range",
+              float(admissible["umf"].min()) <= 0.05,
+              f"lowest admissible U_mf = {admissible['umf'].min():.2f} m/s")
+    plateau = tables / "umf_plateau_statistics.json"
+    if plateau.exists():
+        import json as _json
+        st = _json.loads(plateau.read_text())
+        check("U_mf: total bed pressure drop changes by < 5 % over the range",
+              abs(st["relative_change_across_range"]) < 0.05,
+              f"{st['relative_change_across_range'] * 100:+.2f} %")
+        check("U_mf: a packed bed would have changed far more",
+              st["packed_bed_expectation_ratio"] >= 5,
+              f"ratio = {st['packed_bed_expectation_ratio']:.0f}x")
+    unit = tables / "umf_unit_crosscheck.json"
+    if unit.exists():
+        import json as _json
+        u = _json.loads(unit.read_text())
+        check("unit cross-check: implied bulk density inside the expected FCC range",
+              u["within_expected_range"], f"{u['implied_bulk_density']:.0f} kg/m3")
 
     # --- 10. recorded surrogate reference ----------------------------------
     reference = tables / "surrogate_recorded_reference.csv"

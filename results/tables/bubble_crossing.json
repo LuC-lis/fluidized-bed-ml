@@ -1,0 +1,13 @@
+{
+  "velocity": 0.32812610697839173,
+  "ci_low": 0.26072035624015394,
+  "ci_high": 0.4788381777326951,
+  "n_boot": 2000,
+  "bracket": [
+    0.3,
+    0.4
+  ],
+  "low_height_cm": 60.0,
+  "high_height_cm": 100.0,
+  "note": "Crossing of the radially averaged bubble-passage rate at the two measurement heights. With only two heights this is an event marker, not a resolved height profile."
+}

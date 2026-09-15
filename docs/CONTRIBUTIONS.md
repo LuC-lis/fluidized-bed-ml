@@ -100,6 +100,110 @@ full dataset before splitting, so **every cross-validated score in the archived
 notebooks is optimistically biased** — this is stated wherever those numbers are
 reused.
 
+### C10 · Solved the project's headline claim properly (the strongest *new* result)
+*Evidence: `src/fbfml/features_probe.py`, `scripts/07_regime_classification.py`,
+`results/tables/probe_classification_results.csv`,
+`results/figures/probe_confusion_matrices.png`*
+
+The poster claims the network "accurately distinguishes between different flow
+regimes", but no classifier, accuracy or confusion matrix ever existed. I turned
+that claim into a measured one: **36 features extracted from 10.5 s of
+optical-probe signal**, 434 records, three model families, two evaluation
+protocols, and a majority-class baseline reported next to every score.
+
+| Task | Best accuracy | Majority baseline | Macro-F1 |
+|---|---|---|---|
+| 9-class gas velocity | 0.29 | 0.13 | 0.30 | (0.58-0.64 within one velocity step) |
+| 3-class regime (bubbling / transition / turbulent) | 0.70 | 0.52 | 0.50 |
+| **2-class bubbling vs turbulent** | **≈0.82** | 0.59 | **≈0.81** |
+
+The binary result **survives the harsher protocol** — training on five radial
+positions and testing on a sixth that the model has never seen (accuracy 0.80,
+macro-F1 0.79) — so it is not an artefact of repeating the same measurement.
+
+The two negative results are reported with equal prominence: the *transition*
+regime is not separable as a discrete class (the classifier almost never predicts
+it, macro-F1 0.50), which is what one expects for a continuum; and the exact gas
+velocity is not recoverable from a local probe signal, although the errors are
+strongly ordinal (59-65 % of predictions land within one velocity step).
+
+### C11 · Closed the `U_mf` question instead of ignoring it
+*Evidence: `src/fbfml/analysis_umf.py`, `scripts/10_umf_analysis.py`,
+`results/figures/umf_identifiability.png`*
+
+The project's poster asserts that `U_mf` is identified to ±0.05 m/s, but nothing
+ever computed it. I did the pressure-drop bookkeeping properly:
+
+* the **total** bed pressure drop changes by only **+2.2 % (95 % CI +0.6 to
+  +3.9 %)** across a nine-fold change in gas velocity, against the **+800 %** a
+  packed bed would show. The sum is pinned to the bed weight while the individual
+  taps swing by up to a factor of 47 — i.e. the solids *redistribute* inside the
+  bed (low taps unload, high taps fill) rather than the bed being partly packed;
+* therefore the fixed-bed branch was never sampled, and the two-line intersection
+  is **not identifiable**: a profile-likelihood scan over 0.01–0.60 m/s accepts
+  **every** grid point. A ±0.05 m/s claim is unreproducible, and now provably so;
+* the same numbers resolve a documented open question: if the readings are kPa,
+  the implied bed-averaged bulk density is **662 kg/m³**, inside the 550–850 kg/m³
+  range expected for an FCC bed. That is evidence — not proof — that the unit is kPa.
+
+### C12 · Measured bubble coalescence directly
+*Evidence: `src/fbfml/features_probe.py::bubble_features`,
+`scripts/11_bubble_frequency.py`, `results/tables/bubble_slopes.csv`*
+
+Each bubble passing the probe produces a dip in the local solids fraction, so the
+434 records also contain a physical measurement of **bubble-passage frequency**
+(0.19–5.63 Hz, dip durations 20–1950 ms — the physically expected range). The
+result is not the naive one:
+
+| measurement height | pooled slope of passage rate vs `U_g` | significance |
+|---|---|---|
+| **60 cm** (dense bubbling zone) | **−2.02 Hz per (m/s)** | p < 0.0001, n = 45 records, negative at **5/5** radial positions |
+| **100 cm** (upper region) | **+0.87 Hz per (m/s)** | p = 0.005, n = 41 records |
+
+Two statistically strong trends of *opposite sign* at two heights: **coalescence**
+(rising gas velocity gives fewer, larger bubbles at a fixed low point) versus
+**bed expansion** (the bubbling zone reaches the upper plane). The two curves
+cross at **0.33 m/s (95 % CI 0.26–0.48)**, which is measurably *earlier* than the
+0.55–0.65 m/s regime transition — an important distinction that a single pooled
+curve hides completely (the pooled two-segment fit has R² = −6.2, i.e. worse than
+the mean; reported as a negative result).
+
+### C13 · Made the headline number robust, and added a regression benchmark
+*Evidence: `scripts/12_robustness.py`, `results/tables/robustness_*.csv`*
+
+| task | protocol | result (mean ± std over **10 independent splits**) |
+|---|---|---|
+| bubbling vs turbulent (2-class) | leave-one-replicate-out | **0.829 ± 0.015** (baseline 0.592), macro-F1 0.82 |
+| bubbling vs turbulent (2-class) | **unseen radial position** | **0.790 ± 0.015**, macro-F1 0.78 |
+| 3-class regime | unseen radial position | 0.689 ± 0.014, macro-F1 **0.51** (negative result) |
+| 9-class velocity | unseen radial position | 0.285 ± 0.015 vs 0.13 baseline (negative result) |
+| continuous `U_g` (**regression**) | leave-one-replicate-out | **R² = 0.63 ± 0.00**, MAE **0.119 m/s** |
+| continuous `U_g` | **unseen radial position** | **R² = 0.57 ± 0.00**, MAE **0.127 m/s** |
+
+The single-split value quoted earlier (0.821) sits at the optimistic top of that
+seed distribution — which is exactly why averaging over splits is reported here
+instead of one lucky partition.
+
+### C14 · Triangulated the transition across three instruments
+*Evidence: `src/fbfml/analysis_change_point.py`, `scripts/13_triangulation.py`,
+`results/figures/triangulation_forest.png`*
+
+The same breakpoint estimator, applied to four physically unrelated observables:
+
+| observable | instrument | breakpoint (95 % bootstrap CI) |
+|---|---|---|
+| top-tap mean pressure (110–130 cm) | differential pressure | **0.67 m/s** (0.56–0.70) |
+| top/bottom fluctuation ratio | differential pressure | **0.63 m/s** (0.55–0.69) |
+| wall-vibration intensity | tri-axial accelerometers | **0.53 m/s** (0.45–0.61) |
+| out-of-fold turbulent probability | optical fibre probe | **0.64 m/s** (0.54–0.70) |
+
+All four intervals overlap, the full spread is 0.53–0.67 m/s, and **4 of 4**
+estimates lie within ±0.05 m/s of the pressure-only band. A transition that three
+independent measurement principles agree on, to within the resolution of a
+nine-point velocity sweep, is a considerably stronger statement than any single
+instrument could make — and it is the kind of cross-validation a reviewer asks
+for.
+
 ---
 
 ## 2. Recorded contributions (real work, but the data is not redistributable)
@@ -136,33 +240,6 @@ identical splits.
 
 ---
 
-### C10 · Solved the project's headline claim properly (the strongest *new* result)
-*Evidence: `src/fbfml/features_probe.py`, `scripts/07_regime_classification.py`,
-`results/tables/probe_classification_results.csv`,
-`results/figures/probe_confusion_matrices.png`*
-
-The poster claims the network "accurately distinguishes between different flow
-regimes", but no classifier, accuracy or confusion matrix ever existed. I turned
-that claim into a measured one: **36 features extracted from 10.5 s of
-optical-probe signal**, 434 records, three model families, two evaluation
-protocols, and a majority-class baseline reported next to every score.
-
-| Task | Best accuracy | Majority baseline | Macro-F1 |
-|---|---|---|---|
-| 9-class gas velocity | 0.29 | 0.13 | 0.30 | (0.58-0.64 within one velocity step) |
-| 3-class regime (bubbling / transition / turbulent) | 0.70 | 0.52 | 0.50 |
-| **2-class bubbling vs turbulent** | **≈0.82** | 0.59 | **≈0.81** |
-
-The binary result **survives the harsher protocol** — training on five radial
-positions and testing on a sixth that the model has never seen (accuracy 0.80,
-macro-F1 0.79) — so it is not an artefact of repeating the same measurement.
-
-The two negative results are reported with equal prominence: the *transition*
-regime is not separable as a discrete class (the classifier almost never predicts
-it, macro-F1 0.50), which is what one expects for a continuum; and the exact gas
-velocity is not recoverable from a local probe signal, although the errors are
-strongly ordinal (59-65 % of predictions land within one velocity step).
-
 ---
 
 ## 3. What is **not** attributable to this work
@@ -171,7 +248,7 @@ strongly ordinal (59-65 % of predictions land within one velocity step).
 |---|---|
 | "TensorFlow" | **Retracted.** No TensorFlow code exists; the framework is PyTorch (+ XGBoost, Optuna, SHAP). |
 | ">95 % classification accuracy" | **Retracted.** No classifier, no accuracy metric, no confusion matrix exists in the project. The only ≈0.95 number is a **regression R² on a different dataset**. |
-| "±0.05 m/s accuracy for U_mf" | **Stated only.** No code, table or figure computes `U_mf` or its error. Not usable without new work (the pressure data would in fact support it — see the plan). |
+| "±0.05 m/s accuracy for `U_mf`" | **Refuted.** Now investigated explicitly (C11): the fixed-bed branch is absent from the campaign, so `U_mf` is not identifiable at all from this data. Must not be claimed. |
 | Authorship of, or acknowledgement in, Chen *et al.* (2026), *Eng. Appl. Comput. Fluid Mech.* 20(1):2670348 | **None.** The author of this repository is not an author and is not named in the acknowledgements. The paper is the group's independent descendant of this method family and must be cited as context only. |
 | The `.pvd`/OFP processing pipeline (`OFP-PVD.ipynb`, `计算2.ipynb`) authored from scratch | **Shared.** Those scripts were written on the laboratory's Windows machine (paths like `C:\Users\cbi20\...`) and are the group's existing pipeline; what this repository adds is the reusable, documented re-implementation and the calibration audit. |
 | The 40-sample and 530-row datasets | **Group property.** Used, but not owned or redistributable. |

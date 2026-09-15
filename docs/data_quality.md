@@ -129,12 +129,21 @@ The materials quote 500 Hz for the campaign; the vibration files store
 throughout, and every derived frequency (dominant frequency, PSD axis) inherits a
 possible scale error of an unknown factor if 1666 is wrong.
 
-## 9. Unknown pressure unit (B)
+## 9. Unknown pressure unit — largely resolved, still not confirmed (B)
 
-`Pressure_Energy/*.xlsx` has no unit. Values sit around 1.3 (low taps) and 0.0–0.6
-(high tap) — volts and kPa are both plausible. All pressure results are therefore
-presented as **relative** quantities; no absolute pressure drop or bed weight is
-claimed.
+`Pressure_Energy/*.xlsx` has no unit recorded. Values sit around 1.3 (low taps)
+and 0.0–0.6 (high tap); volts and kPa were both plausible.
+
+**New evidence (see `scripts/10_umf_analysis.py`).** The *total* bed pressure drop
+is 6.497 and changes by only +2.2 % over 0.1–0.9 m/s, which is the signature of a
+fully fluidised bed, so `ΔP_total = ρ_bulk · g · H_bed` applies with
+`H_bed = 1.0 m`. If the readings are in kPa, the implied bed-averaged bulk density
+is **662 kg/m³** — inside the 550–850 kg/m³ range expected for an FCC catalyst bed
+(voidage ≈ 0.5–0.65 at a particle density of 1500–1800 kg/m³).
+
+This is strong evidence that the unit is **kPa**, but it remains an inference from
+a bulk property, so all absolute pressure statements stay flagged as provisional
+until the laboratory confirms the transducer documentation.
 
 ## 10. Missing upstream datasets (A for modelling)
 
@@ -166,7 +175,7 @@ temperature axis. The temperature dimension is documented as an open question.
 |---|---|
 | "TensorFlow" neural network | no TensorFlow anywhere; the code is PyTorch |
 | ">95 % classification accuracy" in the draft CV text | no classifier, no accuracy metric, no confusion matrix exists in the project folder. The only ~0.95 figure is a **regression R²** on a different (non-redistributable) dataset |
-| "U_mf within ±0.05 m/s" | stated on the poster, but no code, table or figure in the folder computes `U_mf` or its error |
+| "U_mf within ±0.05 m/s" | **refuted.** Investigated explicitly in `scripts/10`: the total bed pressure drop is constant to +2.2 % across the whole velocity range, i.e. the bed is fluidised at every measured velocity and the fixed-bed branch was never sampled. The profile-likelihood interval for `U_mf` spans the entire 0.01–0.60 m/s grid — the parameter is not identifiable from this campaign |
 | "transition velocity 0.6–0.8 m/s" | **independently reproduced here** as **0.55–0.65 m/s** (three estimators). The bands overlap; the re-analysis is slightly lower |
 | "12-level wavelet energy" features | **fully reproduced**, machine-exact (§ `docs/data_dictionary.md` §1.2) |
 

@@ -49,6 +49,7 @@ from sklearn.preprocessing import StandardScaler
 from _bootstrap import REPO_ROOT  # noqa: F401
 
 from fbfml import data_ofp, features_probe, paths, viz
+from fbfml.threading import single_threaded
 
 CACHE = paths.TABLES_DIR / "probe_features.csv"
 NON_FEATURE_COLUMNS = {"file", "bed_height_cm", "radial_position", "velocity",
@@ -183,7 +184,8 @@ def evaluate(df: pd.DataFrame, feature_columns, target_column: str, group_column
         from sklearn.base import clone
 
         m = clone(model)
-        m.fit(X[train_idx], y[train_idx])
+        with single_threaded():          # see fbfml.threading: 12x faster here
+            m.fit(X[train_idx], y[train_idx])
         y_pred.append(m.predict(X[test_idx]))
         y_true.append(y[test_idx])
 
@@ -254,8 +256,9 @@ def _figure_confusions(table: pd.DataFrame, feature_columns) -> None:
         y_true, y_pred = [], []
         from sklearn.ensemble import RandomForestClassifier
         for train_idx, test_idx in splitter.split(X, y, group_ids):
-            model = RandomForestClassifier(n_estimators=400, random_state=0, n_jobs=-1)
-            model.fit(X[train_idx], y[train_idx])
+            model = RandomForestClassifier(n_estimators=200, random_state=0, n_jobs=-1)
+            with single_threaded():
+                model.fit(X[train_idx], y[train_idx])
             y_true.append(y[test_idx])
             y_pred.append(model.predict(X[test_idx]))
         y_true, y_pred = np.concatenate(y_true), np.concatenate(y_pred)

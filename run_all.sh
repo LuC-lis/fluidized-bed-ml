@@ -38,6 +38,19 @@ if [[ $FAST -eq 0 ]]; then
   "$PYTHON" scripts/07_regime_classification.py
 fi
 
+echo "== 10 U_mf identifiability and the pressure unit =="
+"$PYTHON" scripts/10_umf_analysis.py
+
+if [[ $FAST -eq 0 ]]; then
+  echo "== 11 bubble-passage statistics =="
+  "$PYTHON" scripts/11_bubble_frequency.py
+  echo "== 12 robustness over ten seeds (slow) =="
+  "$PYTHON" scripts/12_robustness.py
+fi
+
+echo "== 13 triangulation across instruments =="
+"$PYTHON" scripts/13_triangulation.py
+
 echo "== 08 verify every headline claim =="
 "$PYTHON" scripts/08_verify_claims.py
 

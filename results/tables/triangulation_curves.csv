@@ -1,0 +1,36 @@
+velocity,value,curve,instrument
+0.1,0.012994483333333334,top-tap mean,pressure
+0.2,0.02163996666666667,top-tap mean,pressure
+0.3,0.07637041666666668,top-tap mean,pressure
+0.4,0.11483818333333333,top-tap mean,pressure
+0.5,0.15001411666666667,top-tap mean,pressure
+0.6,0.22252765000000002,top-tap mean,pressure
+0.7,0.4317524,top-tap mean,pressure
+0.8,0.6162340000000001,top-tap mean,pressure
+0.9,0.5639902666666666,top-tap mean,pressure
+0.1,0.06895427584046276,top/bottom std ratio,pressure
+0.2,0.1308614857804591,top/bottom std ratio,pressure
+0.3,0.26716656893406343,top/bottom std ratio,pressure
+0.4,0.22371622494851293,top/bottom std ratio,pressure
+0.5,0.2442598590469831,top/bottom std ratio,pressure
+0.6,0.2990655142282275,top/bottom std ratio,pressure
+0.7,0.45818272125435033,top/bottom std ratio,pressure
+0.8,0.6131185217128181,top/bottom std ratio,pressure
+0.9,0.7214613426427964,top/bottom std ratio,pressure
+0.1,0.09557223449313834,wall vibration intensity,vibration
+0.2,0.12787700751453118,wall vibration intensity,vibration
+0.3,0.14535502182993032,wall vibration intensity,vibration
+0.4,0.15777338724902815,wall vibration intensity,vibration
+0.5,0.20010732683464955,wall vibration intensity,vibration
+0.6,0.191755365363703,wall vibration intensity,vibration
+0.7,0.19300900350039915,wall vibration intensity,vibration
+0.8,0.2051579966229009,wall vibration intensity,vibration
+0.9,0.18398169193790623,wall vibration intensity,vibration
+0.1,0.0634,turbulent probability,probe
+0.2,0.1488095238095238,turbulent probability,probe
+0.3,0.17232142857142857,turbulent probability,probe
+0.4,0.2894791666666667,turbulent probability,probe
+0.5,0.3662037037037037,turbulent probability,probe
+0.7,0.6100892857142857,turbulent probability,probe
+0.8,0.6616,turbulent probability,probe
+0.9,0.804795918367347,turbulent probability,probe
