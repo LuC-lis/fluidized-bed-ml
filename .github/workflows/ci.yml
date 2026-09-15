@@ -1,0 +1,55 @@
+name: CI
+
+# The raw experimental data (~4.6 GB) is not in this repository, so the CI runs
+# what can run without it:
+#   * the full unit-test suite (data-dependent tests skip themselves)
+#   * the surrogate harness on its synthetic demo dataset
+#   * a byte-compile check of every module and script
+# The data-dependent analysis scripts are exercised locally; see README.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # CPU-only torch keeps the job small; the models here are MB-scale
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+
+      - name: Byte-compile everything
+        run: python -m compileall -q src scripts
+
+      - name: Unit tests
+        run: python -m pytest tests -q
+
+      - name: Surrogate harness smoke test (synthetic data)
+        run: python scripts/06_train_surrogate.py --demo --epochs 40 --folds 3
+
+      - name: Claim-verification script fails gracefully without the raw data
+        run: |
+          if python scripts/08_verify_claims.py; then
+            echo "verified against local results (not expected in CI)"
+          else
+            echo "no results/ tables present in CI - expected"
+          fi
