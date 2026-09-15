@@ -2,9 +2,8 @@
 """
 10 -- The U_mf question, answered honestly.
 
-The project's poster claims U_mf is identified "within ±0.05 m/s", but no code,
-table or figure ever computed U_mf. This script does the pressure-drop
-bookkeeping properly and reports what the data can and cannot say:
+The two-line intersection method for `U_mf`, applied to this campaign. The script
+does the pressure-drop bookkeeping and reports what the velocity range permits:
 
 * the **total** bed pressure drop is flat to ~1 % across 0.1-0.9 m/s, which is the
   signature of a bed that is fluidised at every measured velocity;

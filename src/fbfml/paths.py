@@ -1,10 +1,8 @@
 """
 Single source of truth for filesystem locations.
 
-The original notebooks hard-coded paths such as
-``/Users/luchi/Desktop/工作簿1.xlsx``, ``F:\\XC_OFP&2D camera\\...`` and
-``C:\\Users\\cbi20\\...``, which made them unrunnable anywhere else.
-Everything now resolves from one, overridable root.
+Every filesystem location resolves from one overridable root, so the same code
+runs against a local copy, an external drive or a freshly downloaded release.
 
 Resolution order for the raw-data root
 --------------------------------------

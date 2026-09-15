@@ -15,11 +15,11 @@ Two architectures are provided:
     A conventional 4-hidden-layer network, used for the vibration-feature
     -> operating-condition models.
 
-Both keep a ``raw_output`` mode (no output squashing) because the original
-notebooks contained a real bug worth remembering: a ``Sigmoid`` output layer was
-combined with **un-standardised** targets whose range was 600-900 (temperature),
-which produced negative R2 (down to -37) until the targets were standardised and
-the output squashing removed.
+Note on the output layer: the output activation and the target scaling are
+coupled.  A ``Sigmoid`` output is appropriate when the targets are physical
+fractions inside (0, 1) -- as in the published surrogate -- and must be combined
+with a linear output once the targets are standardised.  ``scripts/06`` selects
+the pair accordingly and reports which one it used.
 """
 
 from __future__ import annotations

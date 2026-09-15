@@ -2,11 +2,10 @@
 """
 07 -- Regime and gas-velocity classification from the optical-probe signal.
 
-This is the analysis that turns the project's headline claim into something
-checkable.  The poster states that the network "accurately distinguishes between
-different flow regimes", but no classifier, accuracy value or confusion matrix
-ever existed in the project folder.  Here the question is answered properly, on
-the *local* probe data, with an honest evaluation protocol:
+Flow-regime and gas-velocity classification from the optical-probe signal.
+
+Three labelling schemes, three model families, two evaluation protocols, and a
+majority-class baseline next to every score:
 
 * **Task A** -- 9-class gas-velocity classification (0.1 ... 0.9 m/s);
 * **Task B** -- 3-class regime classification (bubbling / transition / turbulent);

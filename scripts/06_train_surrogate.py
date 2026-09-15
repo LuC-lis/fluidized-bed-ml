@@ -14,7 +14,7 @@ The dataset itself belongs to the supervising group (two bed diameters,
 Without it the script runs on a synthetic dataset (``--demo``) so the harness
 itself is verifiable.
 
-The numbers that were *recorded* in the legacy notebooks are stored in
+The numbers that were *recorded* during the original work are stored in
 ``results/tables/surrogate_recorded_reference.csv`` with explicit provenance;
 they are historical evidence, not something this script can regenerate.
 
@@ -83,8 +83,8 @@ def main() -> int:
     if args.data is None or args.demo or not Path(args.data).exists():
         if args.data is not None and not Path(args.data).exists():
             print(f"!! dataset {args.data} not found -- falling back to --demo")
-        print("running on the synthetic demo dataset (the real campaign data belongs to "
-              "the supervising group and is not redistributed here)")
+        print("running on the synthetic demo dataset (the laboratory's surrogate dataset is "
+              "not redistributed here; pass --data to use it)")
         print("  NOTE: demo numbers are a smoke test of the harness, NOT a result -- the")
         print("  synthetic target is a different function from the real one, so the ranking")
         print("  of activations here does not transfer to the published surrogate.")
@@ -139,7 +139,7 @@ def main() -> int:
 
     reference = paths.TABLES_DIR / "surrogate_recorded_reference.csv"
     if reference.exists():
-        print("\n=== numbers recorded in the legacy notebooks (not regenerated here) ===")
+        print("\n=== numbers recorded during the original work (not regenerated here) ===")
         print(pd.read_csv(reference).to_string(index=False))
 
     print("\nDone. See results/figures.")

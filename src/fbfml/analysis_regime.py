@@ -15,8 +15,8 @@ the turbulent regime in a gas-solid fluidized bed:
    and the fluctuation of the top taps rise steeply.  The break in the
    mean-vs-velocity curve locates the transition.
 
-Both estimators are implemented here and reported side by side; a single number
-would over-claim what six taps and nine velocities can support.
+Both estimators are implemented here and reported side by side, so the resolution
+that six taps and nine velocities can actually support stays visible.
 """
 
 from __future__ import annotations
@@ -122,8 +122,8 @@ def detect_transition_velocity(table: pd.DataFrame,
         velocity at which the *lowest* tap first drops measurably below its
         plateau -- i.e. the bed expands past that tap.
 
-    The recommended band is the span of the three; a single number would
-    over-claim what six taps and nine velocities can support.
+    The recommended band is the span of the three estimates; a single number
+    would over-state the resolution of six taps and nine velocities.
     """
     summary = fluctuation_summary(table).sort_values("velocity").reset_index(drop=True)
     velocities = summary["velocity"].to_numpy(dtype=float)

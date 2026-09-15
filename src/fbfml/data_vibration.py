@@ -21,9 +21,7 @@ key                  meaning
 ``full_scale_g``     accelerometer range (2 g)
 ===================  =========================================================
 
-The three columns are the X, Y and Z axes.  The original MATLAB post-processing
-script labelled them "Y axis / X-Y axis / Y-X axis", which is a mis-labelling
-that this module deliberately corrects.
+The three columns of ``processed_data`` are the **X, Y and Z** axes.
 
 Caveats
 -------
@@ -197,10 +195,10 @@ def audit_folder(condition_dir: Path) -> List[dict]:
 def infer_condition_order(records: Dict[str, np.ndarray]) -> List[str]:
     """Order conditions by a monotone physical statistic.
 
-    Kept as a *cross-check* only -- see :func:`order_conditions_by_time` for the
-    ordering actually used downstream.  Ordering by vibration intensity fails on
-    this campaign because one condition is missing a sensor (which is exactly
-    what the cross-check is for).
+    A cross-check used alongside :func:`order_conditions_by_time`, which provides
+    the ordering used downstream.  Averaging the intensity across sensors is
+    sensitive to a sensor being absent from one condition, so the physical check
+    is also available per sensor (:func:`fbfml.analysis_vibration.per_sensor_velocity_check`).
     """
     return sorted(records, key=lambda k: float(np.nanmean(records[k])))
 
@@ -245,10 +243,10 @@ def velocity_assignments(
     Returns a DataFrame with ``condition, timestamp, velocity_assigned,
     velocity_label, velocity_inferred, rank, complete, n_sensors``.
 
-    The two folders that carry a label in their name act as the validation of
-    the rule: ``0.1`` must be first and ``0.9`` last.  Any downstream use must
-    keep the ``velocity_inferred`` flag, because an inferred velocity is not a
-    measurement.
+    The two folders that carry a label in their name validate the rule: ``0.1``
+    must be first and ``0.9`` last.  Any downstream use keeps the
+    ``velocity_inferred`` flag, so a recovered velocity is never presented as a
+    measured one.
     """
     import pandas as pd
 

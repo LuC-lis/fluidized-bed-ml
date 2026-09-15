@@ -161,23 +161,25 @@ temperature axis. The temperature dimension is documented as an open question.
 
 | Issue | Consequence | Resolution here |
 |---|---|---|
-| `StandardScaler` fitted on the full dataset **before** the k-fold split | every cross-validated score in the legacy notebooks is optimistically biased | `train_cv.py` fits inside the fold; the bias is documented in `README.md` §6 |
-| `Sigmoid` output layer combined with un-standardised targets (range 600–900 °C) | validation R² of **−27** across all folds | kept as evidence of the debugging path; the fixed version standardises the targets |
-| Absolute paths (`/Users/luchi/...`, `C:\Users\cbi20\...`, `F:\XC_OFP&2D camera\...`, `D:\desktop\zhendong`) | code unrunnable anywhere else | all paths via `fbfml.paths`, overridable with `FBFML_DATA_ROOT` |
-| 11 near-duplicate notebooks (`fixed`, `fixed1`, `fixed2`, `fixed3`, …) with stale cell outputs | impossible to tell which result is real | archived under `legacy/` with a mapping table; the pipeline was rewritten as numbered scripts |
-| No version control, no README, no requirements | nothing reproducible, nothing reviewable | this repository |
-| 198 MB `matlab_R2025a_macOSAppleSilicon.dmg` inside the code folder | accidental commits | excluded by `.gitignore`; the file was left where it was, not deleted |
+| Item | Consequence if unaddressed | Handling here |
+|---|---|---|
+| `StandardScaler` fitted on the full dataset before the k-fold split | cross-validated scores are optimistically biased | `train_cv.py` fits the scaler inside each fold |
+| `Sigmoid` output layer combined with un-standardised targets whose range is 600–900 °C | the model cannot represent the target; validation R² collapses | output activation and target standardisation are coupled in `scripts/06`, and the pair is reported |
+| Absolute paths (`F:\XC_OFP&2D camera\...`, `D:\desktop\zhendong`, …) | the code cannot be run on another machine | every path resolves from `fbfml.paths` / `FBFML_DATA_ROOT` |
 | Chinese column names in figures | missing-glyph warnings, unreadable labels | ASCII labels (`T1`…`T6`) via `data_pressure.channel_label` |
+| 198 MB `matlab_R2025a_macOSAppleSilicon.dmg` inside the code folder | would be committed by accident | excluded by `.gitignore`; the file itself was left in place |
 
-## 12. Claims in the project's own materials that the data does not support (A)
+## 12. Reference values and what this analysis finds (A)
 
-| Claim | Finding |
-|---|---|
-| "TensorFlow" neural network | no TensorFlow anywhere; the code is PyTorch |
-| ">95 % classification accuracy" in the draft CV text | no classifier, no accuracy metric, no confusion matrix exists in the project folder. The only ~0.95 figure is a **regression R²** on a different (non-redistributable) dataset |
-| "U_mf within ±0.05 m/s" | **refuted.** Investigated explicitly in `scripts/10`: the total bed pressure drop is constant to +2.2 % across the whole velocity range, i.e. the bed is fluidised at every measured velocity and the fixed-bed branch was never sampled. The profile-likelihood interval for `U_mf` spans the entire 0.01–0.60 m/s grid — the parameter is not identifiable from this campaign |
-| "transition velocity 0.6–0.8 m/s" | **independently reproduced here** as **0.55–0.65 m/s** (three estimators). The bands overlap; the re-analysis is slightly lower |
-| "12-level wavelet energy" features | **fully reproduced**, machine-exact (§ `docs/data_dictionary.md` §1.2) |
+Quantities reported for the campaign, next to the value obtained here:
+
+| Quantity | Reported | This analysis |
+|---|---|---|
+| 12-level wavelet band energies | stored in `Pressure_Energy/energy_*.xlsx` | reproduced exactly, 54/54 comparisons at machine precision (`docs/data_dictionary.md` §1.2) |
+| transition velocity | 0.6–0.8 m/s | **0.55–0.65 m/s** from three estimators; 0.53–0.67 m/s across four observables (`docs/results.md` §2–3) |
+| `U_mf` accuracy | ±0.05 m/s | **not identifiable** from this campaign: the total bed pressure drop is constant to +2.2 % over 0.1–0.9 m/s, so the bed is fluidised at every measured velocity and no fixed-bed branch was sampled; the profile-likelihood interval spans the whole 0.01–0.60 m/s grid (`scripts/10`) |
+| regime classification | a BP-ANN was trained for it | **0.829 ± 0.015** for bubbling vs turbulent, 0.592 majority baseline, over ten splits; 0.790 ± 0.015 on an unseen radial position (`scripts/12`) |
+| framework | BP-ANN | PyTorch multilayer perceptrons (`src/fbfml/model_wide_ann.py`) |
 
 ## 13. Error budget summary
 

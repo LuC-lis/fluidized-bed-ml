@@ -6,8 +6,7 @@ Two questions a reviewer will ask about the classification numbers:
 
 1. *How much of the accuracy is luck of the split?*  -- answered by repeating the
    whole evaluation over ten seeds and reporting mean +/- standard deviation and a
-   95 % interval across seeds.  A single split, which is what the project's
-   materials implicitly relied on, cannot answer it.
+   95 % interval across seeds.
 2. *What if the target is treated as continuous instead of nine classes?*  --
    answered by the regression benchmark below, which also gives the error in the
    physical unit (m/s) rather than as a class label.

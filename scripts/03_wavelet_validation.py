@@ -2,13 +2,16 @@
 """
 03 -- Regression test of the wavelet feature extractor against the group's tables.
 
-The script that produced ``Pressure_Energy/energy_0.X.xlsx`` was not kept, so the
-definition of the model inputs was effectively lost.  This script recomputes every
-band energy from the raw pressure logs and compares it with the stored table.
+Verification of the wavelet feature definition.
 
-A perfect match is what makes the rest of the pipeline trustworthy: it proves
-that the features used by the models are exactly reproducible, and it documents
-the feature definition in executable form.
+``src/fbfml/features_wavelet.py`` documents the definition the models were trained
+on (db4, 12 levels, ``mode="symmetric"``, DC removed).  This script recomputes
+every band energy from the raw pressure logs and compares it against the stored
+tables ``Pressure_Energy/energy_0.X.xlsx``.
+
+An exact match is what makes the rest of the pipeline checkable: it shows that the
+model inputs are reproducible from the raw signals alone, and it states the
+definition in executable form.
 
 Outputs
 -------

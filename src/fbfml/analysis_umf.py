@@ -12,9 +12,8 @@ Two regimes, one measurement:
   *independent of gas velocity*.
 
 The classic `U_mf` method intersects the fixed-bed line with the fluidised
-plateau.  If the campaign never sampled the fixed-bed branch, the intersection
-is not identifiable -- and saying so, with the numbers that show it, is a result
-in its own right.
+plateau, so it requires both branches to be present in the data.  The functions
+below quantify whether they are.
 
 The same bookkeeping also cross-checks an open question from
 ``docs/data_quality.md`` §9: the unknown unit of the pressure readings.

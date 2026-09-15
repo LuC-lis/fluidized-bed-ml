@@ -41,16 +41,17 @@ Folder tree
 
 Calibration
 -----------
-Two constants were found in the legacy scripts, both of the form
-``eps_s = a * exp(b * V)`` with ``V`` in volts (the stored counts are in mV)::
+Two constant pairs of the form ``eps_s = a * exp(b * V)`` are recoverable from
+the analysis scripts, with ``V`` in volts (the stored counts are in mV)::
 
     0.0164  * exp(0.7759  * V)   # used for h102 / r0.95
     0.01511 * exp(0.79292 * V)   # used for h40 / r0
 
-They differ by a few per-cent; the provenance of each is undocumented.  Both are
-exposed here, the first is the default, and the calibration uncertainty is
-reported in ``docs/data_quality.md``.  Trend/shape conclusions are insensitive to
-the choice; absolute values are not.
+They differ by a few per-cent.  Both are exposed here, the first is the default,
+and :func:`fbfml.analysis_concentration.calibration_plausibility` decides
+automatically whether either can be used on a given campaign; see
+``docs/data_quality.md`` §4.  Trend and shape conclusions are insensitive to the
+choice, absolute values are not.
 """
 
 from __future__ import annotations

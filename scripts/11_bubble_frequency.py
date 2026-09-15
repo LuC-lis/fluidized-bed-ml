@@ -21,7 +21,7 @@ and the reason is the result: the trend **reverses with height**.
   and is measurably **earlier** than the 0.55-0.65 m/s *regime transition* found
   from the pressure taps. The two events must not be conflated.
 * A negative result is reported too: averaging over the two heights cancels the
-  two opposing trends, and a single pooled curve has no usable trend at all
+  two opposing trends, so a single pooled curve has no usable trend
   (two-segment fit R^2 = -6.2).
 
 Outputs

@@ -1,9 +1,8 @@
 """
-The regression test that makes the whole pipeline trustworthy.
+Regression test for the wavelet feature definition.
 
-The script that produced the group's stored band-energy tables was lost, so the
-definition of the model inputs had to be recovered.  This test fails loudly if
-the recovered definition ever drifts from the stored values.
+The definition in ``fbfml.features_wavelet`` must keep reproducing the stored
+band-energy tables exactly.  This test fails if it ever drifts.
 
 Run it with the raw data present:
 

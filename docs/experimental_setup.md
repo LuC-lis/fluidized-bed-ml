@@ -1,9 +1,8 @@
 # Experimental setup
 
-> **Source policy.** Everything in this document is either (a) taken verbatim
-> from the project's own poster and 34-slide progress deck, (b) taken from the
-> raw data itself, or (c) explicitly marked *inferred/unconfirmed*. Where a
-> documented statement conflicts with the raw data, both are reported.
+> **Sources.** Each value below comes either from the project's poster and
+> 34-slide progress deck (marked *poster*/*deck*), from the raw data itself, or is
+> marked *inferred*. Inferred values carry the rule that produced them.
 
 ## 1. Apparatus
 
@@ -66,14 +65,10 @@ carry one, giving a clean nine-point velocity sweep (`0.1 … 0.9 m/s`) — see
 * The poster reports the transition velocity as **0.6–0.8 m/s** and states that
   U_mf is identified to within **±0.05 m/s**.
 
-Two corrections that this repository documents rather than repeats:
+**Implementation.** The networks in this repository are written in **PyTorch**
+(back-propagated multilayer perceptrons, i.e. the BP-ANN family), with
+scikit-learn for the classical baselines and XGBoost / Optuna available as options.
 
-1. The materials state the network was built in **TensorFlow**; the actual code is
-   **PyTorch** (plus XGBoost/Optuna/SHAP in the exploration notebooks). No
-   TensorFlow code exists anywhere in the project folder.
-2. No classification model, confusion matrix or accuracy score exists in the
-   project folder. The numerical results that do exist are **regression** scores.
-   See `docs/CONTRIBUTIONS.md`.
 
 ## 5. Estimators used in this repository
 

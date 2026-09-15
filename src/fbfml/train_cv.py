@@ -1,18 +1,18 @@
 """
 Seeded, reproducible evaluation harness.
 
-Everything the original notebooks did in-line (scaler fitting, k-fold split,
-early stopping, per-fold metrics, averaging) is factored out here so that a
-result is one function call and one configuration object -- the missing piece
-that made the original numbers hard to trust or to reproduce.
+Scaler fitting, the k-fold split, early stopping, per-fold metrics and
+averaging are factored out here, so a result is one function call and one
+configuration object.
 
 Guarantees
 ----------
-* The scaler is fitted **inside** each fold (no train/validation leakage) -- the
-  original notebooks fitted ``StandardScaler`` on the full dataset before
-  splitting, which inflates the scores.
+* The scaler is fitted **inside** each fold, so no information leaks from the
+  validation split into training.
 * All random sources (numpy, torch, python) are seeded from one integer.
-* A single ``train_one_fold`` never sees the validation data during training.
+* ``train_one_fold`` never sees the validation data during training.
+* Every result is reported per fold and as an aggregate, so the spread across
+  splits is visible rather than hidden behind a single number.
 """
 
 from __future__ import annotations

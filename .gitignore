@@ -42,3 +42,6 @@ venv/
 release/archives/
 release/*.tar
 release/*.tar.gz
+
+# career/application material lives outside the repository
+../申请材料/

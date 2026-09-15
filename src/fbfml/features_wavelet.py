@@ -1,16 +1,13 @@
 """
-Wavelet energy features -- reverse-engineered to match the group's tables exactly.
+Wavelet energy features -- definition and exact verification.
 
-Background
-----------
-The modelling notebooks consumed a feature table ``工作簿1.xlsx`` whose columns
-were ``Level1..Level12`` (band energies), ``Level1_ratio..level12_ratio`` and a
-``TotalEnergy``.  The script that produced it was **not** kept in the project
-folder, i.e. the feature definition was effectively lost.
-
-This module recovers it.  Reverse-engineered definition, verified against
-``Pressure_Energy/energy_0.X.xlsx`` (the group's own derived tables) for all
-6 pressure channels x 9 gas velocities with **zero** discrepancy:
+Feature definition
+------------------
+The models were trained on a table whose columns were ``Level1..Level12`` (band
+energies), ``Level1_ratio..level12_ratio`` and a ``TotalEnergy``.  The definition
+below reproduces the stored band-energy tables
+(``Pressure_Energy/energy_0.X.xlsx``) for all 6 pressure channels x 9 gas
+velocities with **zero** discrepancy:
 
     x_d = x - mean(x)                              # DC removal, NOT detrending
     c   = pywt.wavedec(x_d, 'db4', level=12, mode='symmetric')

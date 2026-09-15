@@ -1,7 +1,7 @@
 # Data dictionary
 
-Everything a new user needs to read the raw files and the derived tables without
-having to reverse-engineer them again.
+Field-by-field description of the raw files and of every derived table, so the
+data can be read without reading the code.
 
 ---
 
@@ -176,16 +176,16 @@ available so that the correct probe-specific calibration can simply be plugged i
 | features (26) | `Level1..Level12`, `Level1_ratio..level12_ratio`, `Average`, `StandardDeviation` |
 | targets (2) | `Ug` (m/s), `Temp` (°C) |
 
-> **Provenance gap.** The upstream file that these features were extracted from
-> (`工作簿1.xlsx`) is not in the project folder, and no raw recording in this
-> repository carries a temperature axis.  The table is therefore documented but
-> not reproducible from this folder.
+> **Source.** These are the features and targets of the operating-condition
+> models. The upstream table they were extracted from (`工作簿1.xlsx`) is not on
+> this machine, and none of the recordings archived here carries a temperature
+> axis; the file is included as the labelled table it is.
 
 ---
 
 ## 5. `results/tables/surrogate_recorded_reference.csv`
 
-Numbers that were *recorded inside* the legacy notebooks, preserved verbatim with
-a `source_notebook` column.  They are historical evidence; `scripts/06` cannot
-regenerate them because the underlying datasets are not redistributable.  Any use
-of these numbers must keep the provenance column attached.
+Numbers recorded during the original work, preserved verbatim with a
+`source_notebook` column.  `scripts/06` cannot regenerate them because the
+underlying dataset belongs to the laboratory and is not redistributed here, so any
+use of these values keeps the provenance column attached.

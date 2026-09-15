@@ -5,10 +5,9 @@ future version of its author).
 
 ## Ground rules
 
-1. **Never commit raw data.** `.gitignore` blocks `.mat`, `.bin`, `.pvd`, `.xlsx`,
-   `.dmg`, `.pptx`, `.pdf`. The recordings are ~4.6 GB and belong to the
-   laboratory. Derived tables and figures in `results/` *are* committed on
-   purpose — they are the evidence.
+1. **Raw data stays out of git.** `.gitignore` blocks `.mat`, `.bin`, `.pvd`,
+   `.xlsx`, `.dmg`, `.pptx`, `.pdf`. The recordings are ~4.6 GB. Derived tables and
+   figures in `results/` *are* committed on purpose — they are the evidence.
 2. **Never invent an operating condition.** If a velocity, height or radial
    position is not in the folder name, it must be marked `*_inferred` and its
    recovery rule must be documented and tested.
@@ -36,14 +35,13 @@ future version of its author).
 
 | Item | Where it is tracked |
 |---|---|
-| correct probe calibration constants | `docs/data_quality.md` §4 — **still the top open item** |
-| provenance of the `Temp = 600–900 °C` axis | `docs/data_quality.md` §10 |
-| written (email) confirmation of the data-release approval | `docs/DATA_RELEASE.md` §3 |
-| confirmation that the pressure unit is kPa | `docs/data_quality.md` §9 — evidence points that way |
-| a third bed height for the probe, to resolve the expansion event in height | `docs/CONCRETE_EVIDENCE_PLAN.md` §3.0 |
+| correct probe calibration constants | `docs/ROADMAP.md` §1 — **top open item** |
+| source of the `Temp = 600–900 °C` axis | `docs/data_quality.md` §10 |
+| written (email) confirmation of the data-release approval | `docs/DATA_RELEASE.md` §4 |
+| confirmation that the pressure unit is kPa | `docs/ROADMAP.md` §3 |
+| a third bed height for the probe, to resolve the expansion event in height | `docs/ROADMAP.md` §2 |
 
-Closed since the first version: `U_mf` error bar (§3.2), soft-sensor benchmark
-(§3.3), seed-averaged error bars (§3.4), and two bonus analyses (§3.0).
+
 
 ## Environment
 

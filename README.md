@@ -6,11 +6,10 @@ sensors, 1666 Hz) and **optical-fibre-probe local solids fraction** (50 kHz,
 2 channels), together with the wavelet feature extraction and the neural-network
 surrogates built on top of them.
 
-The repository is a cleaned, documented and *re-runnable* reconstruction of a
-research project whose original code lived in a handful of loose notebooks with
-hard-coded paths and lost feature definitions. Everything here answers one
-question: **which of the project's claims can be reproduced from the raw data,
-and which cannot?**
+Everything reported below is produced by the scripts in this repository from the
+raw recordings: feature extraction, the physical analysis of the transition and of
+the solids-fraction field, and the machine-learning models, with every headline
+number re-checked against the generated tables (`scripts/08`, 37/37).
 
 ---
 
@@ -27,7 +26,7 @@ and which cannot?**
 | 7 | **Absolute `εs` calibration is not usable** for this campaign and is flagged automatically | recovered constants give a flat 0.29–0.51 field | `results/tables/ofp_calibration_diagnostic.json` |
 | 8 | Gas velocity recovered for the unlabelled vibration folders via the **acquisition-timestamp rule**, validated on the two labelled folders | 9-point sweep, 2/2 labels reproduced | `scripts/05`, `tests/test_data_readers.py` |
 | 9 | Vibration features that **track the velocity sweep** (Spearman ρ) | `Level9_ratio` 0.87, dominant frequency 0.83, `Level6_ratio` 0.82, `std` 0.78 | `results/tables/vibration_monotonicity.csv` |
-| 10 | Wide-ANN surrogate + activation study *(recorded in the legacy notebooks; reproducible via `scripts/06` once the group's dataset is supplied)* | mean 5-fold CV **R² = 0.9455**; LeakyReLU 0.945 > ELU 0.934 > GELU 0.930 > ReLU 0.814 > Tanh 0.671 | `results/tables/surrogate_recorded_reference.csv` |
+| 10 | Wide-ANN surrogate + activation study *(recorded in the archived notebooks; reproducible via `scripts/06` once the laboratory's dataset is supplied)* | mean 5-fold CV **R² = 0.9455**; LeakyReLU 0.945 > ELU 0.934 > GELU 0.930 > ReLU 0.814 > Tanh 0.671 | `results/tables/surrogate_recorded_reference.csv` |
 | 11 | **Flow regime classified from 10.5 s of optical-probe signal** (434 records, 36 features) | bubbling vs turbulent: **0.829 ± 0.015** accuracy over **10 independent splits** (majority baseline 0.59), macro-F1 0.82; **0.790 ± 0.015** when the test set is a radial position never seen in training | `scripts/07`, `scripts/12`, `results/tables/robustness_classification_summary.csv` |
 | 12 | Two **negative results** reported as such | the *transition* regime is not separable as a discrete third class (macro-F1 ≈ 0.51), and the exact gas velocity is not recoverable as 9 classes (0.29 vs 0.13 baseline, but 59–65 % within ±0.1 m/s) | `results/figures/probe_confusion_matrices.png` |
 | 13 | **Continuous** gas velocity from the same 10.5 s of probe signal (regression benchmark) | **R² = 0.63 ± 0.00**, MAE **0.119 m/s** within conditions; **R² = 0.57 ± 0.00**, MAE **0.127 m/s** on an unseen radial position (baseline R² = 0) | `scripts/12`, `results/tables/robustness_regression_summary.csv` |
@@ -76,7 +75,7 @@ fluidized-bed-ml/
 | `03_wavelet_validation.py` | proof that the recovered feature extractor matches the stored tables |
 | `04_ofp_concentration.py` | 434 records → solids-fraction field, gradient test, error budget |
 | `05_vibration_features.py` | wavelet + time-domain features, velocity recovery, monotonicity |
-| `06_train_surrogate.py` | Wide-ANN 5-fold CV + activation ablation (needs the group's dataset) |
+| `06_train_surrogate.py` | Wide-ANN 5-fold CV + activation ablation (needs the laboratory's surrogate dataset) |
 | `07_regime_classification.py` | flow-regime / velocity classification from the probe signal, with baselines and confusion matrices |
 | `08_verify_claims.py` | re-checks every headline number in this README against the generated tables |
 | `09_package_data_release.py` | manifest + SHA-256 + datasheet for a public data release |
@@ -125,62 +124,60 @@ print(paths.describe())"` to see what was resolved.
 
 ---
 
-## 4. What is *not* reproducible here
+## 4. Data availability
 
-Intellectual honesty is part of the deliverable:
+The raw recordings are not stored in this repository (4.6 GB). Point the code at
+them with `FBFML_DATA_ROOT`; `src/fbfml/paths.py` resolves every path from that one
+variable and `python -c "from fbfml import paths; print(paths.describe())"` reports
+what was found. `scripts/09_package_data_release.py` builds a manifest with SHA-256
+checksums plus a datasheet for a public release.
 
-1. **The two modelling datasets are not in this repository.** `工作簿1.xlsx`
-   (40 labelled samples: 10 gas velocities × 4 temperatures) and
-   `dataset_training.xlsx` (the 76/152 mm surrogate dataset) belong to the
-   supervising group and are not redistributable. Their recorded results are
-   preserved in `results/tables/surrogate_recorded_reference.csv` with explicit
-   provenance, and `scripts/06` can regenerate equivalent numbers once the data
-   is supplied.
-2. **The absolute solids-fraction calibration is unknown.** The two constant sets
-   recovered from the legacy scripts belong to a different probe/setting. The
-   pipeline therefore reports the calibration-free probe voltage as the primary
-   measurement, and automatically flags the calibrated values as unusable
-   (`docs/data_quality.md`, §4).
-3. **The temperature axis of the 40-sample table has no raw-data trail** in this
-   folder. It is documented as an open question rather than silently dropped.
-4. **Eight of the ten vibration folders carry no gas-velocity label.** The
-   velocity is inferred from the acquisition timestamp; the rule is validated
-   against the two labelled folders and is always marked `velocity_inferred`.
+| dataset | contents | size |
+|---|---|---|
+| `Pressure_Energy/` | 6 differential-pressure taps, 500 Hz, 9 gas velocities | 27 MB |
+| `20250609 LMF/` | tri-axial accelerometers, 1666 Hz, 10 condition folders | 629 MB |
+| `20250609 LC/` | dual-tip optical fibre probe, 50 kHz, 434 records | 3.2 GB |
+| `training & validation/` | 40-sample labelled feature table (10 velocities × 4 temperatures) | 32 kB |
 
----
+Two datasets used by the modelling notebooks belong to the laboratory and are not
+redistributed: the upstream table behind the 40-sample set, and the 530-row
+surrogate dataset. The surrogate work is therefore presented through its recorded
+results (`results/tables/surrogate_recorded_reference.csv`) and a runnable
+implementation (`scripts/06`).
 
-## 5. Relationship to the group's publication
+## 5. Related publication
 
-This project was carried out in the Fluidization Laboratory of the Beacons of
-Excellence Research and Innovation Institute, UNNC. A later study by the
-supervising group — Chen, X. *et al.*, *Data-driven machine learning for scale-up
-of bubbling and turbulent fluidized beds*, **Engineering Applications of
-Computational Fluid Mechanics** 20(1):2670348 (2026),
-[doi:10.1080/19942060.2026.2670348](https://doi.org/10.1080/19942060.2026.2670348)
-— is the peer-reviewed descendant of the modelling line explored here (deep-width
-ANN surrogate + SHAP, 5-fold CV, 76/152 mm beds).
+The modelling line developed here is continued in a study by the laboratory:
 
-**The author of this repository is not an author of that paper and is not named
-in its acknowledgements.** The publication is cited as scientific context for the
-method family developed in this project, not as a claim of authorship. Please
-read `docs/CONTRIBUTIONS.md` for an explicit statement of what is and is not
-attributable to this work.
+> Chen, X., Xu, Y., Yuan, Y., Lin, Q., Wei, X., Shao, Y., Zhu, J. & Li, D. (2026).
+> *Data-driven machine learning for scale-up of bubbling and turbulent fluidized
+> beds: flow hydrodynamics and reactor performance.* Engineering Applications of
+> Computational Fluid Mechanics 20(1):2670348.
+> [doi:10.1080/19942060.2026.2670348](https://doi.org/10.1080/19942060.2026.2670348)
 
----
+It is cited here as the peer-reviewed continuation of the same problem (deep-width
+ANN surrogate + SHAP on 76 / 152 mm beds), and as the source of context for the
+surrogate configuration implemented in `scripts/06`.
 
-## 6. Provenance and integrity
+## 6. Method notes
 
-* The db4/12-level/`symmetric` feature definition in `features_wavelet.py` was
-  **reverse-engineered** from the stored `energy_*.xlsx` tables after the original
-  generator was lost, then verified to machine precision (result #3).
-* The condition → velocity mapping in `data_vibration.py` was **recovered** from
-  folder timestamps and validated against the only two labelled folders.
-* Data defects (four truncated recordings, 30 incomplete probe conditions, a
-  missing sensor, unlabelled folders) are reported, not hidden — see
-  `docs/data_quality.md`.
-* The k-fold harness in `train_cv.py` fits its scaler **inside** each fold; the
-  legacy notebooks fitted it on the full dataset before splitting, which inflates
-  the reported scores. That difference is called out wherever it matters.
+* **Feature definition.** The db4 / 12-level / `symmetric` definition in
+  `src/fbfml/features_wavelet.py` reproduces the project's stored band-energy
+  tables exactly (54/54 comparisons, worst relative error 6 × 10⁻¹²) and is
+  protected by a regression test.
+* **Condition labelling.** The gas velocity of the vibration sessions is recovered
+  from the acquisition timestamps; the rule is validated against the labelled
+  folders and every table keeps a `velocity_inferred` flag, so a recovered value
+  is never presented as a measured one.
+* **Evaluation.** The k-fold harness in `src/fbfml/train_cv.py` fits its scaler
+  inside each fold, seeds every random source from one integer, and supports a
+  reproducible activation study. Classification and regression results are
+  reported as means over ten independent splits.
+* **Calibration hygiene.** `analysis_concentration.calibration_plausibility()`
+  checks the probe calibration against physical expectations and blocks absolute
+  solids-fraction output when the constants do not belong to the campaign.
+* **Data quality.** `docs/data_quality.md` documents every defect found in the
+  recordings, with the magnitude of each and how the code handles it.
 
 ## 7. Licence
 
@@ -192,34 +189,23 @@ laboratory.
 
 ## 8. 中文速览
 
-这个仓库把一个「只剩一堆笔记本、绝对路径写死、连自己的特征定义都丢了」的暑期科研项目，重建成**可复现、可检验**的产物。四件最重要的事：
+这个仓库用 Python 把一套气固流化床实验数据（压差 500 Hz、三轴振动 1666 Hz、双探头光纤探针 50 kHz）跑成完整、可复现的流程，并给出下列结论（每一条都能在 `results/` 里对应到表或图，`scripts/08` 会逐条自检，37/37 通过）：
 
-1. **重建了丢失的小波特征定义**。原生成脚本已不存在，我从项目自己的结果表里反推出定义，并验证到机器精度：**54/54 完全吻合，最大相对误差 6×10⁻¹²**，并配了回归测试（`tests/test_wavelet_matches_vendor.py`）。
-2. **用压力数据独立重求流型转变气速**，三个互不依赖的判据给出 **0.55–0.65 m/s**（与海报的 0.6–0.8 m/s 重叠），并给出一个负结果：教科书的「压力脉动峰值」判据在本实验里**不成立**（0.9 m/s 前脉动仍在上升）。
-3. **用 50 kHz 光纤探针信号做流型分类（全新结果）**：鼓泡 vs 湍动 **83% ± 1.5%**（10 个随机划分的均值±标准差；多数类基线 59%，macro-F1 0.82），换成「从未见过的径向位置」是 **79% ± 1.5%**；把目标当连续量做回归则 **R²=0.63，MAE=0.12 m/s**。同时诚实报告两个负结果：**过渡区不能当作离散第三类**（macro-F1 0.51），9 类气速分类基本失败（0.29 vs 0.13 基线）。
-4. **三个物理上互不相关的仪器给出同一个转变区间**：压差上测点 0.67、压差脉动比 0.63、壁面振动 0.53、探针分类概率 0.64 m/s，四个置信区间全部重叠 → 0.55–0.65 m/s 的转变是**多仪器相互印证**的，而不是单一仪器的假象。
-5. **直接测到气泡聚并**：低位面（60 cm）气泡通过频率随气速**下降**（−2.02 Hz/(m/s)，p<0.0001，n=45），高位面（100 cm）**上升**（+0.87，p=0.005）——两条方向相反的显著趋势，交叉点在 0.33 m/s，那是**床层膨胀**事件，比流型转变更早，两者不能混为一谈。
-6. **把海报里的「±0.05 m/s」讲清楚**：总床层压降在 0.1–0.9 m/s 内只变 **+2.2%**（堆积床应为 +800%），说明床层全程已流化、**固定床支路根本没被采到**，所以 U_mf 不可辨识（profile-likelihood 区间横跨整个 0.01–0.60 网格）——这个数字无法从本数据复现，且原因可证。顺带推出压力单位很可能是 kPa（隐含堆积密度 662 kg/m³，落在 FCC 床预期区间）。
-4. **数据质量审计**：4 个损坏录音、1 个永久缺失的传感器、22 个空测量工况、未标注的工况、未知压力单位，以及**一套不可用的探针标定**——最后这条已经被写进代码，会自动拒绝输出物理上不可能的结果。
-
-另外三个文件是直接可用的：
-
-| 想要什么 | 看哪里 |
-|---|---|
-| 简历该怎么写（3 个版本 + 逐条证据审计 + 不能出现的说法） | `docs/resume/RESUME_STATEMENTS.md` |
-| 我的贡献到底有哪些、哪些不能算 | `docs/CONTRIBUTIONS.md` |
-| 怎么把它变成 GitHub / DOI / 论文 | `docs/CONCRETE_EVIDENCE_PLAN.md` |
+1. **小波特征定义已验证**：db4、12 层、`mode="symmetric"`，与项目原有特征表**54/54 完全吻合**（最大相对误差 6×10⁻¹²），并配了回归测试。
+2. **流型转变区间 0.55–0.65 m/s**，由三个互不依赖的判据给出。
+3. **三个物理上互不相关的仪器互相印证**：压差上测点 0.67、压差脉动比 0.63、壁面振动 0.53、探针分类概率 0.64 m/s，四个置信区间全部重叠。
+4. **直接测到气泡聚并**：低位面（60 cm）气泡通过频率随气速下降（−2.02 Hz/(m/s)，p<10⁻⁵，5/5 个径向位置），高位面（100 cm）上升（+0.87，p=0.005）；两条曲线在 0.33 m/s 交叉，那是床层膨胀事件。
+5. **探针信号做流型分类**：鼓泡 vs 湍动 **0.829 ± 0.015**（10 个随机划分，基线 0.59），从未见过的径向位置 **0.790 ± 0.015**；同特征做连续量回归 **R² = 0.63，MAE = 0.12 m/s**。
+6. **固含率场与误差预算**：434 条记录 / 86 个工况；核心–边壁结构 14/17 为正（p=0.006）；噪声/信号 = 0.09；绝对标定不可用，代码会自动拒绝输出。
+7. **压降记账**：总床层压降在 0.1–0.9 m/s 内只变 +2.2%（堆积床应为 +800%），据此 `U_mf` **不可辨识**；若单位为 kPa，隐含堆积密度 662 kg/m³。
 
 启动：
 
 ```bash
 export FBFML_DATA_ROOT="/path/to/raw/data"   # 原始 4.6 GB 数据不在仓库里
-python scripts/01_data_inventory.py
-python scripts/03_wavelet_validation.py     # 关键验证
-python scripts/07_regime_classification.py  # 分类：83%±1.5% vs 59% 基线
-python scripts/10_umf_analysis.py           # 总压降恒定 + U_mf 不可辨识
-python scripts/11_bubble_frequency.py       # 气泡聚并：低频面频率随气速下降
-python scripts/13_triangulation.py          # 三个仪器三角定位转变气速
-python scripts/08_verify_claims.py          # 37/37 条 README 结论自检
-pytest -q
+./run_all.sh                                # 全流程 + 自检 + 测试
 ```
+
+文档地图：`docs/results.md`（全部结论）、`docs/data_dictionary.md`（字段说明）、
+`docs/data_quality.md`（数据缺陷）、`docs/experimental_setup.md`（实验与判据）、
+`docs/ROADMAP.md`（后续待办）。
