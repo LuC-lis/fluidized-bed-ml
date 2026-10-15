@@ -6,57 +6,7 @@ scripts and re-verified by `scripts/08_verify_claims.py` (37/37 checks).
 
 ---
 
-## 1. Feature extraction
-
-| Finding | Value | Artefact |
-|---|---|---|
-| The db4 12-level wavelet feature definition used by the project's models, documented and machine-verified against the stored feature tables | **54/54 channel–velocity comparisons exact, worst relative error 6 × 10⁻¹²** | `scripts/03`, `tests/test_wavelet_matches_vendor.py` |
-| Definition | `Level_i = Σ cD_i²`, db4, 12 levels, `mode="symmetric"`, DC removed, `TotalEnergy = Σ Level1..12` | `src/fbfml/features_wavelet.py` |
-
-## 2. Flow-regime transition from the differential-pressure taps
-
-| Finding | Value | Artefact |
-|---|---|---|
-| Transition band, three independent instrument-only estimators | **0.55 – 0.65 m/s** | `scripts/02` |
-| Estimator detail | top-tap break 0.65, axial-contrast break 0.65, low-tap plateau decline 0.55 | `results/tables/pressure_regime_transition.json` |
-| The classic "peak of the fluctuation intensity" criterion | **not applicable** — the summed standard deviation is still rising at 0.9 m/s | `results/figures/pressure_std_vs_velocity.png` |
-
-## 3. Triangulation across three instruments
-
-One breakpoint estimator (`src/fbfml/analysis_change_point.py`) applied to four
-physically unrelated observables (`scripts/13`):
-
-| Observable | Instrument | Breakpoint (95 % bootstrap CI) |
-|---|---|---|
-| top-tap mean pressure (110–130 cm) | differential pressure | **0.67 m/s** (0.56–0.70) |
-| top/bottom fluctuation ratio | differential pressure | **0.63 m/s** (0.55–0.69) |
-| wall-vibration intensity | tri-axial accelerometers | **0.53 m/s** (0.45–0.61) |
-| out-of-fold turbulent probability | optical fibre probe | **0.64 m/s** (0.54–0.70) |
-
-All four intervals overlap (common intersection 0.56–0.61 m/s); the full spread is
-0.53–0.67 m/s. **4/4** estimates lie within ±0.05 m/s of the pressure-only band.
-
-## 4. Bubble-passage statistics from the optical probe
-
-A dual-tip probe sees each bubble as a dip in the local solids fraction, so the
-records carry a direct measurement of bubble passage (`scripts/11`):
-
-| Measurement height | Slope of passage rate vs `U_g` (pooled, per-position intercepts) | Significance |
-|---|---|---|
-| **60 cm** (dense bubbling zone) | **−2.02 Hz per (m/s)** | p = 2 × 10⁻⁶, n = 45, negative at **5/5** radial positions |
-| **100 cm** (upper region) | **+0.87 Hz per (m/s)** | p = 0.005, n = 41 |
-
-Two strong trends of **opposite sign**: bubble coalescence at the low plane,
-bed expansion at the high plane. The two curves cross at **0.33 m/s**
-(95 % CI 0.26–0.48), measurably earlier than the regime transition.
-
-Passage rate range 0.19–5.63 Hz, dip durations 20–1950 ms — both inside the range
-expected for a bubbling bed.
-
-**Negative result:** pooling the two heights cancels the opposing trends; the
-pooled two-segment fit has **R² = −6.2**, worse than the mean.
-
-## 5. Machine learning on the optical-probe signal
+## 1. Machine learning on the optical-probe signal
 
 36 features from 10.5 s of probe signal per record, 434 records, 86 conditions.
 
@@ -83,25 +33,69 @@ class (macro-F1 0.51), and nine-class velocity classification does not work
 (0.285 vs 0.129). Both are consistent with the transition being a continuum and
 with the local probe carrying regime rather than velocity information.
 
-## 6. Solids-fraction field and its error budget
+## 2. Flow-regime transition from the differential-pressure taps
 
 | Finding | Value | Artefact |
 |---|---|---|
-| Records processed | **434 records / 86 conditions / 108 folders**, 10.49 s each at 50 kHz | `results/tables/ofp_conditions.csv` |
-| Core–annulus structure | probe signal lower on the axis than near the wall in **14/17** conditions, sign test **p = 0.006** | `results/figures/ofp_radial_gradient.png` |
-| Error budget | repeat spread 85 mV vs spatial range 949 mV → **noise/signal = 0.09** | `results/tables/ofp_noise_budget.json` |
-| Absolute `εs` calibration | the available constants give a flat 0.29–0.51 field, so the pipeline reports probe voltage as the primary measurement and rejects the calibration automatically | `results/tables/ofp_calibration_diagnostic.json` |
+| Transition band, three independent instrument-only estimators | **0.55 – 0.65 m/s** | `scripts/02` |
+| Estimator detail | top-tap break 0.65, axial-contrast break 0.65, low-tap plateau decline 0.55 | `results/tables/pressure_regime_transition.json` |
+| The classic "peak of the fluctuation intensity" criterion | **not applicable** — the summed standard deviation is still rising at 0.9 m/s | `results/figures/pressure_std_vs_velocity.png` |
 
-## 7. Pressure-drop bookkeeping and `U_mf`
+### Triangulation across three instruments
+
+One breakpoint estimator (`src/fbfml/analysis_change_point.py`) applied to four
+physically unrelated observables (`scripts/13`):
+
+| Observable | Instrument | Breakpoint (95 % bootstrap CI) |
+|---|---|---|
+| top-tap mean pressure (110–130 cm) | differential pressure | **0.67 m/s** (0.56–0.70) |
+| top/bottom fluctuation ratio | differential pressure | **0.63 m/s** (0.55–0.69) |
+| wall-vibration intensity | tri-axial accelerometers | **0.53 m/s** (0.45–0.61) |
+| out-of-fold turbulent probability | optical fibre probe | **0.64 m/s** (0.54–0.70) |
+
+All four intervals overlap (common intersection 0.56–0.61 m/s); the full spread is
+0.53–0.67 m/s. **4/4** estimates lie within ±0.05 m/s of the pressure-only band.
+
+## 3. Bubble-passage statistics from the optical probe
+
+A dual-tip probe sees each bubble as a dip in the local solids fraction, so the
+records carry a direct measurement of bubble passage (`scripts/11`):
+
+| Measurement height | Slope of passage rate vs `U_g` (pooled, per-position intercepts) | Significance |
+|---|---|---|
+| **60 cm** (dense bubbling zone) | **−2.02 Hz per (m/s)** | p = 2 × 10⁻⁶, n = 45, negative at **5/5** radial positions |
+| **100 cm** (upper region) | **+0.87 Hz per (m/s)** | p = 0.005, n = 41 |
+
+Two strong trends of **opposite sign**: bubble coalescence at the low plane,
+bed expansion at the high plane. The two curves cross at **0.33 m/s**
+(95 % CI 0.26–0.48), measurably earlier than the regime transition.
+
+Passage rate range 0.19–5.63 Hz, dip durations 20–1950 ms — both inside the range
+expected for a bubbling bed.
+
+**Negative result:** pooling the two heights cancels the opposing trends; the
+pooled two-segment fit has **R² = −6.2**, worse than the mean.
+
+## 4. Pressure-drop bookkeeping and `U_mf` — the limits of the campaign
 
 | Finding | Value | Artefact |
 |---|---|---|
 | Total bed pressure drop across 0.1–0.9 m/s | **+2.2 %** (95 % CI +0.6 to +3.9 %) — a packed bed would change by **+800 %** | `results/tables/umf_plateau_statistics.json` |
 | Individual taps over the same range | up to a **factor of 47** change in opposite directions: the solids redistribute inside the bed rather than the bed being partly packed | `results/figures/umf_cumulative_profile.png` |
 | `U_mf` identifiability | the profile-likelihood interval spans the entire 0.01–0.60 m/s grid — `U_mf` is **not identifiable** from this campaign, because no fixed-bed branch was sampled | `results/figures/umf_identifiability.png` |
+| The ±0.05 m/s `U_mf` accuracy quoted in the project's earlier poster | **withdrawn** rather than reported as an unstable estimate | `scripts/10` |
+| Absolute `εs` calibration | the available constants give a flat 0.29–0.51 field, so the pipeline reports probe voltage as the primary measurement and rejects the calibration automatically | `results/tables/ofp_calibration_diagnostic.json` |
 | Pressure unit cross-check | if the readings are kPa, the implied bed-averaged bulk density is **662 kg/m³**, inside the 550–850 kg/m³ expected for an FCC bed | `results/tables/umf_unit_crosscheck.json` |
 
-## 8. Vibration features and condition recovery
+## 5. Solids-fraction field and its error budget
+
+| Finding | Value | Artefact |
+|---|---|---|
+| Records processed | **434 records / 86 conditions / 108 folders**, 10.49 s each at 50 kHz | `results/tables/ofp_conditions.csv` |
+| Core–annulus structure | probe signal lower on the axis than near the wall in **14/17** conditions, sign test **p = 0.006** | `results/figures/ofp_radial_gradient.png` |
+| Error budget | repeat spread 85 mV vs spatial range 949 mV → **noise/signal = 0.09** | `results/tables/ofp_noise_budget.json` |
+
+## 6. Vibration features and condition recovery
 
 | Finding | Value | Artefact |
 |---|---|---|
@@ -109,7 +103,7 @@ with the local probe carrying regime rather than velocity information.
 | Features that track the velocity sweep (Spearman ρ) | `Level9_ratio` 0.87, dominant frequency 0.83, `Level6_ratio` 0.82, `std` 0.78 | `results/tables/vibration_monotonicity.csv` |
 | Physical cross-check | median per-sensor ρ between vibration intensity and the recovered velocity = **0.80** | `results/tables/vibration_per_sensor_check.csv` |
 
-## 9. Wide-ANN surrogate (recorded results)
+## 7. Wide-ANN surrogate (recorded results)
 
 The surrogate mapping `(r/R, H, DT, H0, U_g) → (εs, C/C0)` is implemented in
 `src/fbfml/model_wide_ann.py` and evaluated by the seeded harness in
@@ -128,3 +122,10 @@ their provenance in `results/tables/surrogate_recorded_reference.csv`:
 
 Mean CV MSE 0.00094. The activation function moves the score by 0.28 on identical
 splits — more than the architecture does.
+
+## 8. Feature extraction (validated definition)
+
+| Finding | Value | Artefact |
+|---|---|---|
+| The db4 12-level wavelet feature definition used by the project's models, documented and machine-verified against the stored feature tables | **54/54 channel–velocity comparisons exact, worst relative error 6 × 10⁻¹²** | `scripts/03`, `tests/test_wavelet_matches_vendor.py` |
+| Definition | `Level_i = Σ cD_i²`, db4, 12 levels, `mode="symmetric"`, DC removed, `TotalEnergy = Σ Level1..12` | `src/fbfml/features_wavelet.py` |
